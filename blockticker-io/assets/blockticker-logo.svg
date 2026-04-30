@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 80" width="440" height="80">
+  <defs>
+    <linearGradient id="bt-g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00d4aa"/>
+      <stop offset="50%" stop-color="#00b8d4"/>
+      <stop offset="100%" stop-color="#0099ff"/>
+    </linearGradient>
+    <linearGradient id="bt-g2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00d4aa" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0099ff" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Logo mark: hexagonal block with inner pulse wave -->
+  <g transform="translate(40,40)">
+    <!-- Outer hex -->
+    <polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" 
+      fill="url(#bt-g2)" stroke="url(#bt-g1)" stroke-width="2"/>
+    <!-- Inner hex -->
+    <polygon points="0,-18 15.6,-9 15.6,9 0,18 -15.6,9 -15.6,-9" 
+      fill="rgba(10,14,26,0.7)" stroke="url(#bt-g1)" stroke-width="1" stroke-opacity="0.4"/>
+    <!-- Pulse wave cutting through -->
+    <path d="M-20,0 L-10,0 L-6,-11 L0,13 L6,-7 L10,0 L20,0" 
+      fill="none" stroke="#00d4aa" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Dot accents -->
+    <circle cx="-20" cy="0" r="1.5" fill="#00d4aa"/>
+    <circle cx="20" cy="0" r="1.5" fill="#0099ff"/>
+  </g>
+  
+  <!-- Wordmark -->
+  <text x="78" y="34" font-family="'Outfit','Segoe UI',sans-serif" font-size="32" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Block</text>
+  <text x="180" y="34" font-family="'Outfit','Segoe UI',sans-serif" font-size="32" font-weight="800" fill="url(#bt-g1)" letter-spacing="-0.5">Ticker</text>
+  
+  <!-- Tagline -->
+  <text x="78" y="56" font-family="'Outfit','DM Sans',sans-serif" font-size="11" font-weight="500" fill="#475569" letter-spacing="3">LIVE CRYPTO &amp; FOREX INTELLIGENCE</text>
+  
+  <!-- Subtle .io badge -->
+  <rect x="310" y="16" width="30" height="18" rx="4" fill="rgba(0,212,170,0.1)" stroke="rgba(0,212,170,0.2)" stroke-width="0.5"/>
+  <text x="325" y="29" font-family="'Outfit',sans-serif" font-size="10" font-weight="700" fill="#00d4aa" text-anchor="middle">.io</text>
+</svg>

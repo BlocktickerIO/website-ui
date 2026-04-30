@@ -1,0 +1,66 @@
+/* BlockTicker — Admin Wizard Styles */
+.fxlm-wrap { max-width: 900px; margin: 20px auto; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.fxlm-header { display: flex; align-items: center; justify-content: space-between; background: #0a0e1a; color: #fff; padding: 16px 24px; border-radius: 8px 8px 0 0; }
+.fxlm-logo { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.fxlm-version { font-size: 12px; opacity: 0.6; }
+.fxlm-progress-bar-wrap { background: #e0e0e0; height: 8px; border-radius: 0; overflow: hidden; }
+.fxlm-progress-bar { background: linear-gradient(90deg, #00d4aa, #0099ff); height: 100%; transition: width 0.5s ease; }
+.fxlm-progress-label { text-align: center; font-size: 13px; color: #555; margin: 8px 0 16px; }
+.fxlm-success-banner { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 14px 20px; border-radius: 6px; margin-bottom: 16px; font-weight: 600; }
+.fxlm-success-banner a { color: #0f5132; text-decoration: underline; }
+
+/* API Section */
+.fxlm-api-section { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.fxlm-api-section h3 { margin: 0 0 14px; font-size: 15px; }
+.fxlm-api-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.fxlm-api-field label { display: block; font-size: 12px; font-weight: 600; color: #444; margin-bottom: 4px; }
+.fxlm-api-field input { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
+.fxlm-tip { font-weight: 400; color: #888; }
+.fxlm-tip a { color: #0073aa; }
+.fxlm-save-msg { margin-left: 10px; font-size: 13px; color: #00d4aa; font-weight: 600; }
+
+/* Run All */
+.fxlm-run-all-wrap { text-align: center; margin: 20px 0; }
+.fxlm-hint { font-size: 12px; color: #888; margin-top: 6px; }
+
+/* Phases */
+.fxlm-phase { margin-bottom: 24px; }
+.fxlm-phase-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0073aa; border-bottom: 2px solid #0073aa; padding-bottom: 6px; margin-bottom: 10px; }
+
+/* Steps */
+.fxlm-step { display: flex; align-items: center; justify-content: space-between; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; margin-bottom: 8px; transition: background 0.2s; }
+.fxlm-step.done { background: #f0fff8; border-color: #b2dfdb; }
+.fxlm-step.error { background: #fff5f5; border-color: #ffcccc; }
+.fxlm-step.running { background: #fffbf0; border-color: #ffd700; }
+.fxlm-step-left { display: flex; align-items: center; gap: 10px; }
+.fxlm-step-status { font-size: 16px; width: 22px; text-align: center; }
+.fxlm-step-icon { font-size: 18px; }
+.fxlm-step-label { font-size: 14px; font-weight: 500; color: #333; }
+.fxlm-step-right { display: flex; align-items: center; gap: 12px; }
+.fxlm-step-msg { font-size: 12px; color: #888; max-width: 280px; text-align: right; }
+.fxlm-step.done .fxlm-step-msg { color: #00897b; }
+.fxlm-step.error .fxlm-step-msg { color: #c0392b; }
+
+/* Buttons */
+.fxlm-btn { display: inline-block; padding: 8px 18px; border: none; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: opacity 0.15s, transform 0.1s; }
+.fxlm-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.fxlm-btn:active { transform: translateY(0); }
+.fxlm-btn-primary { background: #0073aa; color: #fff; }
+.fxlm-btn-secondary { background: #6c757d; color: #fff; }
+.fxlm-btn-run { background: #0a0e1a; color: #fff; padding: 6px 14px; font-size: 12px; }
+.fxlm-step.done .fxlm-btn-run { background: #888; }
+.fxlm-btn-large { padding: 14px 32px; font-size: 16px; border-radius: 8px; background: linear-gradient(135deg, #00d4aa, #0073aa); }
+
+/* Footer */
+.fxlm-footer { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; margin-top: 24px; font-size: 13px; color: #555; }
+.fxlm-footer p { margin: 4px 0; }
+
+/* Spinner */
+.fxlm-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .fxlm-api-grid { grid-template-columns: 1fr; }
+  .fxlm-step { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .fxlm-step-right { width: 100%; justify-content: space-between; }
+}

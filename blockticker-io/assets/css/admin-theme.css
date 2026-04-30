@@ -1,0 +1,311 @@
+/**
+ * BlockTicker — Admin Light Theme (v119.26.0)
+ *
+ * Why this file exists
+ * --------------------
+ * The frontend uses a deliberately dark "terminal" aesthetic via revamp-v44.css
+ * (--bt-bg #0A0B0D, --bt-text #fff, etc.). That stylesheet is NOT loaded in
+ * WP admin context, but the admin PHP templates reference the same CSS variable
+ * names in inline styles (var(--bt-text), var(--bt-text-3), etc.). Without the
+ * frontend stylesheet these variables are undefined → text falls back to UA
+ * defaults → dark text on dark hardcoded backgrounds → unreadable.
+ *
+ * This file provides admin-context definitions of those same variables, mapped
+ * to a light, WordPress-admin-friendly palette. It also contributes a small
+ * library of helper classes (.bt-card, .bt-panel, .bt-form-row, .bt-input,
+ * .bt-select, .bt-grid-2, .bt-status-pill) used by newer admin pages.
+ *
+ * Loaded by class-admin.php::enqueue() on every BlockTicker admin screen.
+ * Also wraps a !important override layer so the existing inline dark hex
+ * values (#121316, #0A0B0D, #0a0c0f, #0b0f1a, #0f1322, #1a2035) are visually
+ * lightened even on pages that have not been refactored yet.
+ */
+
+/* ── Token palette ───────────────────────────────────────────────────
+   Scoped to .wrap inside our admin pages so we never affect the rest
+   of WordPress admin styling. */
+.wrap.bt-admin,
+body.toplevel_page_fxlm-wizard .wrap,
+body[class*="page_fxlm-"] .wrap,
+body[class*="page_bt-"] .wrap {
+    /* Surfaces */
+    --bt-bg:        #ffffff;
+    --bt-bg-elev:   #ffffff;
+    --bt-bg-elev-2: #f6f7f7;
+    --bt-bg-stripe: #fbfbfc;
+    --bt-bg-input:  #ffffff;
+
+    /* Borders */
+    --bt-border:   #dcdcde;
+    --bt-border-2: #c3c4c7;
+
+    /* Text scale (dark on light) */
+    --bt-text:   #1d2327;
+    --bt-text-2: #3c434a;
+    --bt-text-3: #646970;
+    --bt-text-4: #8c8f94;
+
+    /* Brand accents — kept identical to frontend so brand reads through */
+    --bt-accent:      #00a96e;   /* darker green for AA contrast on white */
+    --bt-accent-soft: #e7f9f0;
+    --bt-accent-warm: #b45309;
+    --bt-danger:      #d63638;
+    --bt-info:        #2271b1;
+
+    /* Shadow */
+    --bt-shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --bt-shadow-md: 0 2px 8px rgba(0,0,0,.06);
+
+    /* Radius — admin readability beats terminal aesthetic in WP admin */
+    --bt-radius:    4px;
+    --bt-radius-sm: 3px;
+    --bt-radius-lg: 6px;
+}
+
+/* ── Visual override of the legacy hardcoded dark inline backgrounds ──
+   The PHP templates were authored with style="background:#121316; ..."
+   inline. Inline styles outrank stylesheets, so the only way to lighten
+   them without touching every callsite is targeted attribute selectors
+   with !important. This is intentional — it gets us a clean admin UX
+   without a 500-edit refactor. */
+.wrap [style*="background:#121316"],
+.wrap [style*="background: #121316"],
+.wrap [style*="background:#1a2035"],
+.wrap [style*="background: #1a2035"],
+.wrap [style*="background:#0f1322"],
+.wrap [style*="background: #0f1322"] {
+    background: #ffffff !important;
+    border-color: #dcdcde !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+/* Inputs/selects/textareas had their own (deeper) dark backgrounds */
+.wrap input[style*="background:#0A0B0D"],
+.wrap input[style*="background: #0A0B0D"],
+.wrap input[style*="background:#0a0b0d"],
+.wrap input[style*="background:#0b0f1a"],
+.wrap input[style*="background: #0b0f1a"],
+.wrap input[style*="background:#0a0c0f"],
+.wrap input[style*="background: #0a0c0f"],
+.wrap select[style*="background:#0A0B0D"],
+.wrap select[style*="background:#0b0f1a"],
+.wrap select[style*="background: #0b0f1a"],
+.wrap textarea[style*="background:#0A0B0D"],
+.wrap textarea[style*="background:#0b0f1a"],
+.wrap textarea[style*="background: #0b0f1a"],
+.wrap textarea[style*="background:#0a0c0f"],
+.wrap textarea[style*="background: #0a0c0f"] {
+    background: #ffffff !important;
+    border: 1px solid #c3c4c7 !important;
+    color: #1d2327 !important;
+}
+
+/* The .bt-menu-row inner inputs use #121316 as a "field on card" background */
+.wrap .bt-menu-row input[style*="background:#121316"],
+.wrap .bt-menu-row select[style*="background:#121316"] {
+    background: #f6f7f7 !important;
+    border-color: #c3c4c7 !important;
+    color: #1d2327 !important;
+}
+
+/* The lone code-style textarea using neon green on near-black */
+.wrap textarea[style*="color:#00ff66"] {
+    background: #1d2327 !important;   /* keep dark — code editor convention */
+    color: #00ff66 !important;
+    border-color: #2c3338 !important;
+}
+
+/* Border colour overrides — the inline rgba(0,255,102,.2) terminal-style
+   borders were designed for a black card. On white they read as muddy
+   green hairlines. Replace with the standard WP admin border. */
+.wrap .bt-card,
+.wrap [style*="border:1px solid rgba(0,255,102,.2)"],
+.wrap [style*="border:1px solid rgba(0,255,102,.18)"],
+.wrap [style*="border:1px solid rgba(0,255,102,.15)"],
+.wrap [style*="border:1px solid rgba(255,255,255,.07)"],
+.wrap [style*="border:1px solid rgba(255,255,255,.08)"],
+.wrap [style*="border:1px solid rgba(255,255,255,.06)"],
+.wrap [style*="border:1px solid rgba(255,255,255,.05)"],
+.wrap [style*="border:1px solid rgba(255,255,255,.1)"],
+.wrap [style*="border:1px solid #1e2940"] {
+    border-color: #dcdcde !important;
+}
+
+/* The "border-bottom" separators inside cards used rgba(255,255,255,.05)
+   which is invisible on white. Make them visible. */
+.wrap [style*="border-bottom:1px solid rgba(255,255,255,.05)"],
+.wrap [style*="border-bottom:1px solid rgba(255,255,255,.06)"],
+.wrap [style*="border-bottom:1px solid rgba(255,255,255,.08)"],
+.wrap [style*="border-bottom:1px solid rgba(255,255,255,.1)"] {
+    border-bottom-color: #f0f0f1 !important;
+}
+
+/* The CTA gradient buttons used a 2-stop neon-green gradient that's bright
+   on white. Tone it down and bump contrast on the label. */
+.wrap button[style*="linear-gradient(135deg,#00FF66,#00FF66)"],
+.wrap button[style*="linear-gradient(135deg, #00FF66, #00FF66)"],
+.wrap [style*="linear-gradient(135deg,#00FF66,#00FF66)"][onclick],
+.wrap span[style*="linear-gradient(135deg,#00FF66,#00FF66)"] {
+    background: #00a96e !important;
+    background-image: linear-gradient(135deg, #00b377, #009060) !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+
+/* The KEY SET / KEY MISSING pills referenced rgba(0,255,102,.12) which is
+   a barely-visible mint on white — bump opacity and use the AA-safe accent. */
+.wrap [style*="background:rgba(0,255,102,.12)"],
+.wrap [style*="background: rgba(0,255,102,.12)"],
+.wrap [style*="background:rgba(0,255,102,.15)"],
+.wrap [style*="background:rgba(0,255,102,.06)"],
+.wrap [style*="background:rgba(0,255,102,.08)"],
+.wrap [style*="background:rgba(0,255,102,.1)"] {
+    background: #e7f9f0 !important;
+    border-color: #b5e3cd !important;
+}
+
+/* Accent-coloured text inside the same pills (color:#00FF66) is invisible on
+   the new soft-mint background. Switch to the AA-safe accent token. */
+.wrap [style*="color:#00FF66"],
+.wrap [style*="color: #00FF66"],
+.wrap [style*="color:#00ff66"],
+.wrap [style*="color: #00ff66"] {
+    color: #00875a !important;
+}
+
+/* Purple/blue/red-tinted info chips used elsewhere — keep brand colour but
+   ensure the background is light enough to pair with white text. */
+.wrap [style*="background:rgba(167,139,250,.08)"],
+.wrap [style*="background:rgba(167,139,250,.12)"],
+.wrap [style*="background:rgba(167,139,250,.15)"] {
+    background: #f3eefe !important;
+    border-color: #ddd0fa !important;
+}
+.wrap [style*="background:rgba(0,153,255,.08)"] {
+    background: #e7f1fa !important;
+    border-color: #c3def0 !important;
+}
+.wrap [style*="background:rgba(255,59,48,.06)"],
+.wrap [style*="background:rgba(255,59,48,.1)"] {
+    background: #fcebec !important;
+    border-color: #f0c5c8 !important;
+}
+
+/* The diagnostic-only neon-amber tile */
+.wrap [style*="background:rgba(245,158,11,.1)"] {
+    background: #fcf3e1 !important;
+    border-color: #f0d894 !important;
+}
+
+/* Headings with dark inline color: var(--bt-text) now read fine because
+   --bt-text resolves to #1d2327 in admin context. No override needed. */
+
+/* ── Helper classes for new code (non-inline-style call sites) ──────── */
+.wrap .bt-card {
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.wrap .bt-card h2,
+.wrap .bt-card h3 {
+    margin-top: 0;
+    color: #1d2327;
+}
+.wrap .bt-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1d2327;
+    margin: 0 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.wrap .bt-card-subtitle {
+    font-size: 12px;
+    color: #646970;
+    margin: 0 0 14px;
+}
+.wrap .bt-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.wrap .bt-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) {
+    .wrap .bt-grid-2,
+    .wrap .bt-grid-3 { grid-template-columns: 1fr; }
+}
+.wrap .bt-form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.wrap .bt-form-row label {
+    font-size: 12px;
+    color: #646970;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+.wrap .bt-input,
+.wrap .bt-select,
+.wrap .bt-textarea {
+    background: #ffffff;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #1d2327;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color .15s, box-shadow .15s;
+}
+.wrap .bt-input:focus,
+.wrap .bt-select:focus,
+.wrap .bt-textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+.wrap .bt-status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+.wrap .bt-status-pill--ok    { background: #e7f9f0; color: #00875a; border-color: #b5e3cd; }
+.wrap .bt-status-pill--warn  { background: #fcf3e1; color: #b45309; border-color: #f0d894; }
+.wrap .bt-status-pill--err   { background: #fcebec; color: #d63638; border-color: #f0c5c8; }
+.wrap .bt-status-pill--mute  { background: #f0f0f1; color: #646970; border-color: #dcdcde; }
+
+/* Page heading — gives our pages a consistent, lighter feel than the gradient
+   green tile that was being used across the wizard / generator / configurator.  */
+.wrap .bt-page-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0 8px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #dcdcde;
+}
+.wrap .bt-page-head .bt-page-head__icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7f9f0;
+    color: #00875a;
+    border-radius: 6px;
+    font-size: 18px;
+}
+.wrap .bt-page-head h1 { margin: 0; font-size: 20px; font-weight: 600; color: #1d2327; }
+.wrap .bt-page-head p  { margin: 2px 0 0; font-size: 13px; color: #646970; }
+
+/* Tighten focus rings on accent inputs (checkbox/radio) */
+.wrap input[type="checkbox"],
+.wrap input[type="radio"] { accent-color: #00a96e; }
+
+/* Fix the `border:2px solid var(--bt-text-4)` pattern used by AI-provider radio
+   cards — without admin-side var fallback they had no visible border. */
+.wrap label[style*="border:2px solid var(--bt-text-4)"] {
+    border-color: #c3c4c7 !important;
+}

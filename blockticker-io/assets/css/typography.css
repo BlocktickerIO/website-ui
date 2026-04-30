@@ -1,0 +1,2480 @@
+/* ═══════════════════════════════════════════════════════════════════
+ * BlockTicker.io — Typography System (v119.28.25)
+ *
+ * Implementation of the institutional-grade type system spec.
+ * Inspiration: Coinbase, TradingView, Glassnode.
+ *
+ * Pairing:
+ *   • Display & Headings:  Space Grotesk (400, 500, 600, 700)
+ *   • UI / Body / Data:    Inter (400, 500, 600, 700) with tabular-nums
+ *
+ * This stylesheet is the LAST piece of CSS loaded by the chrome stack,
+ * so its declarations win the cascade against any earlier overrides.
+ * Loaded by:
+ *   • assets/css/landing-revamp.css → enqueued first
+ *   • assets/css/typography.css     → enqueued AFTER (this file)
+ *
+ * Author: Senior Product Design — Type Systems
+ * ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §1 — DESIGN TOKENS
+ * Every font reference in the system flows through these vars.
+ * ─────────────────────────────────────────────────────────────────── */
+:root,
+.btlp,
+body,
+body.bt-site-takeover {
+  /* ── Font families ── */
+  --bt-font-display: 'Space Grotesk', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  --bt-font-ui:      'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Inter w/ tabular-nums — NOT a separate mono font. Coinbase/TradingView pattern. */
+  --bt-font-mono:    'Inter', 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Legacy aliases — keep mockup variables wired to the new system */
+  --f-display: var(--bt-font-display);
+  --f-body:    var(--bt-font-ui);
+  --f-mono:    var(--bt-font-mono);
+
+  /* ── Type scale (desktop) ── */
+  --bt-fs-display:  4.5rem;     /* 72px — hero/marketing only */
+  --bt-fs-h1:       3.5rem;     /* 56px */
+  --bt-fs-h2:       2.25rem;    /* 36px */
+  --bt-fs-h3:       1.5rem;     /* 24px */
+  --bt-fs-h4:       1.125rem;   /* 18px */
+  --bt-fs-body-lg:  1.0625rem;  /* 17px — long-form editorial */
+  --bt-fs-body:     0.9375rem;  /* 15px — default UI body */
+  --bt-fs-sm:       0.8125rem;  /* 13px — secondary text */
+  --bt-fs-xs:       0.6875rem;  /* 11px — labels, table headers */
+
+  /* ── Line heights ── */
+  --bt-lh-display:  1.05;
+  --bt-lh-tight:    1.10;       /* H1 */
+  --bt-lh-snug:     1.15;       /* H2 */
+  --bt-lh-h3:       1.25;
+  --bt-lh-h4:       1.35;
+  --bt-lh-body:     1.55;       /* UI body */
+  --bt-lh-editorial:1.7;        /* long-form reading */
+  --bt-lh-data:     1.4;        /* dense scanning */
+
+  /* ── Letter spacing ── */
+  --bt-tracking-display: -0.025em;
+  --bt-tracking-h1:      -0.022em;
+  --bt-tracking-h2:      -0.018em;
+  --bt-tracking-h3:      -0.012em;
+  --bt-tracking-h4:      -0.005em;
+  --bt-tracking-body:     0;
+  --bt-tracking-data:    -0.005em;
+  --bt-tracking-label:    0.08em;
+}
+
+@media (max-width: 767px) {
+  :root, .btlp, body {
+    --bt-fs-display: 2.75rem;   /* 44px */
+    --bt-fs-h1:      2.25rem;   /* 36px */
+    --bt-fs-h2:      1.75rem;   /* 28px */
+    --bt-fs-h3:      1.25rem;   /* 20px */
+    --bt-fs-h4:      1rem;      /* 16px */
+    --bt-fs-body-lg: 1rem;      /* 16px */
+  }
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §2 — BASELINE
+ * Body uses Inter at 15px/1.55 with system feature flags enabled.
+ * ─────────────────────────────────────────────────────────────────── */
+html { font-size: 16px; }
+
+body,
+.btlp,
+body.bt-landing-page,
+body.bt-site-takeover {
+  font-family: var(--bt-font-ui) !important;
+  font-size: var(--bt-fs-body) !important;
+  line-height: var(--bt-lh-body) !important;
+  font-weight: 400;
+  letter-spacing: var(--bt-tracking-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Inter feature flags: cv11 (single-storey a), ss01 (general stylistic alt) */
+  font-feature-settings: 'cv11' 1, 'ss01' 1;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §3 — HEADINGS (Space Grotesk)
+ * Weight cap is 600. 700 reads aggressive at scale.
+ * ─────────────────────────────────────────────────────────────────── */
+/* Heading family — applies font + color, but NOT size.
+ * Size rules below are scoped to specific structural selectors so widget H1s
+ * (e.g. .fxlm-gl-title inside a shortcode) keep their own intended sizing. */
+.btlp h1, .btlp h2, .btlp h3, .btlp h4, .btlp h5, .btlp h6,
+body.bt-site-takeover .fxlm-page-header h1,
+body.bt-site-takeover .fxlm-page-header h2,
+body.bt-site-takeover .bt-page-title,
+.bt-page-title {
+  font-family: var(--bt-font-display) !important;
+  color: #ffffff;
+}
+
+/* H1 — scoped to: landing (.btlp), page-header H1, WP entry-title.
+ * Widget H1s inside shortcodes are NOT included so they keep their own sizing. */
+.btlp h1,
+body.bt-site-takeover .fxlm-page-header h1,
+body.bt-site-takeover h1.entry-title,
+body.bt-site-takeover h1.bt-page-title,
+.bt-page-title {
+  font-size: var(--bt-fs-h1) !important;
+  font-weight: 600 !important;
+  line-height: var(--bt-lh-tight) !important;
+  letter-spacing: var(--bt-tracking-h1) !important;
+  margin: 0 0 12px;
+}
+
+/* Widget-internal H1s — .fxlm-gl-title, .fxlm-exc-title, .fxlm-wl-title.
+ * Typography only enforces family + weight; the widget owns the size. */
+body.bt-site-takeover .fxlm-gl-title,
+body.bt-site-takeover .fxlm-exc-title,
+body.bt-site-takeover .fxlm-wl-title {
+  font-family: var(--bt-font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.012em !important;
+}
+
+.btlp h2,
+body.bt-site-takeover .fxlm-page-header h2 {
+  font-size: var(--bt-fs-h2) !important;
+  font-weight: 600 !important;
+  line-height: var(--bt-lh-snug) !important;
+  letter-spacing: var(--bt-tracking-h2) !important;
+  margin: 0 0 12px;
+}
+
+/* Section H2 inside dashboard pages — smaller, sits over panels */
+body.bt-site-takeover .bt-dash-wrap > h2,
+body.bt-site-takeover .bt-site-content-wrap > h2 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.625rem !important;     /* 26px */
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.012em !important;
+  margin: 28px 0 12px !important;
+}
+
+.btlp h3,
+body.bt-site-takeover .bt-dash-wrap h3 {
+  font-family: var(--bt-font-display) !important;
+  font-size: var(--bt-fs-h3) !important;
+  font-weight: 500 !important;
+  line-height: var(--bt-lh-h3) !important;
+  letter-spacing: var(--bt-tracking-h3) !important;
+}
+
+.btlp h4,
+body.bt-site-takeover .bt-dash-wrap h4 {
+  font-family: var(--bt-font-ui) !important;
+  font-size: var(--bt-fs-h4) !important;
+  font-weight: 600 !important;
+  line-height: var(--bt-lh-h4) !important;
+  letter-spacing: var(--bt-tracking-h4) !important;
+}
+
+/* Hero / display — reserved for marketing landing only */
+.btlp .hero__h1,
+.btlp [class*="hero__h1"] {
+  font-family: var(--bt-font-display) !important;
+  font-weight: 600 !important;
+  font-size: clamp(2.75rem, 6vw, 4.5rem) !important;
+  line-height: var(--bt-lh-display) !important;
+  letter-spacing: var(--bt-tracking-display) !important;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §4 — DATA TYPOGRAPHY (CRITICAL)
+ * Every numeric in the UI gets tabular-nums + slashed-zero.
+ * This is what makes columns of prices stack perfectly and gives
+ * the dashboard its TradingView-level data clarity.
+ * ─────────────────────────────────────────────────────────────────── */
+.btlp .num, .btlp .price, .btlp .pct, .btlp .score,
+.btlp .ticker__item, .btlp .ticker__sym,
+.btlp .ticker__chg--up, .btlp .ticker__chg--down,
+.btlp .frame__price, .btlp .frame__chg,
+.btlp .feed, .btlp .feed__sym,
+.btlp [data-cell="price"], .btlp [data-cell="chg"],
+.btlp .stack__corner-tag, .btlp .stack__rail,
+.btlp .howit__step, .btlp .howit__state-label,
+.btlp .outcome__num, .btlp .corr__pair,
+.btlp .corr__val--up, .btlp .corr__val--down,
+.btlp .src-card__live, .btlp .nav__demo-label,
+.btlp [class*="__mono"],
+.btlp table.data-table td:not(.is-text) {
+  font-family: var(--bt-font-mono) !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1, 'cv11' 1, 'ss02' 1 !important;
+  font-variant-ligatures: none !important;
+  letter-spacing: var(--bt-tracking-data) !important;
+}
+
+/* ── Price weights ── */
+.btlp .price       { font-weight: 500; font-size: var(--bt-fs-body); color: #ffffff; }
+.btlp .price--lg   { font-weight: 600; font-size: 1.125rem; }
+.btlp .price--xl   { font-weight: 600; font-size: 1.75rem; line-height: 1; letter-spacing: -.015em; }
+
+/* ── Percentages ── */
+.btlp .pct         { font-weight: 600; font-size: var(--bt-fs-sm); }
+.btlp .pct--up,
+.btlp .ticker__chg--up,
+.btlp .frame__chg--up,
+.btlp .corr__val--up    { color: #00C853 !important; font-weight: 600 !important; }
+.btlp .pct--down,
+.btlp .ticker__chg--down,
+.btlp .frame__chg--down,
+.btlp .corr__val--down  { color: #FF453A !important; font-weight: 600 !important; }
+.btlp .pct--flat        { color: #71717a !important; }
+
+/* The bright accent green stays for ticker LIVE indicator + brand CTAs,
+   but data-cell percentages use the slightly muted #00C853 for table density. */
+.btlp .ticker__live     { color: #00FF66 !important; font-weight: 700; }
+
+/* ── Confidence scores ── */
+.btlp .score            { font-weight: 700; font-size: 0.875rem; }
+.btlp .score--high      { color: #00C853 !important; }
+.btlp .score--med       { color: #FFB840 !important; }
+.btlp .score--low       { color: #FF453A !important; }
+
+/* ── Tickers / asset symbols ── */
+.btlp .ticker__sym,
+.btlp .frame__sym {
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Right-align all numeric cells in tables (TradingView rule) ── */
+.btlp table.frame__table td.frame__price,
+.btlp table.frame__table td.frame__chg,
+.btlp table.frame__table th.is-num,
+.btlp .data-table td.num {
+  text-align: right;
+  padding-right: 16px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §5 — UI ELEMENTS
+ * Buttons, navigation, cards.
+ * ─────────────────────────────────────────────────────────────────── */
+
+/* ── Buttons ── */
+.btlp .btn,
+.btlp a.btn,
+.btlp button.btn,
+.btlp .nav__signup {
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;        /* 14px */
+  letter-spacing: -0.005em !important;
+  line-height: 1 !important;
+  text-transform: none !important;        /* never uppercase — that's 2015 */
+  font-feature-settings: 'ss01' 1 !important;
+}
+.btlp .btn--lg { font-size: 0.9375rem !important; }
+.btlp .btn--sm { font-size: 0.8125rem !important; }
+
+/* ── Navigation ── */
+.btlp .nav__link,
+.btlp .nav__login {
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  letter-spacing: -0.003em !important;
+  text-transform: none !important;
+}
+.btlp .nav__link--active { font-weight: 600 !important; }
+
+.btlp .nav__brand,
+.btlp .nav__name,
+.btlp .foot__brand-name {
+  font-family: var(--bt-font-display) !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;             /* 16px — same baseline as nav links */
+  letter-spacing: 0.04em !important;       /* logo wordmarks need air */
+  text-transform: uppercase !important;
+}
+
+/* ── Cards (3-tier hierarchy: label → title → value) ── */
+.btlp .card__label,
+.btlp [class*="__label"]:not(input):not(textarea):not(select),
+.btlp .pill,
+.btlp .hero__pill {
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 600 !important;
+  font-size: var(--bt-fs-xs) !important;
+  letter-spacing: var(--bt-tracking-label) !important;
+  text-transform: uppercase !important;
+}
+
+.btlp .card__title,
+.btlp .frame__title,
+.btlp .stack__title {
+  font-family: var(--bt-font-display) !important;
+  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+  letter-spacing: var(--bt-tracking-h4) !important;
+  line-height: 1.3 !important;
+  color: #ffffff;
+}
+
+.btlp .card__value,
+.btlp [class*="__value"]:not(input):not(select):not(textarea) {
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 600 !important;
+  font-size: 1.75rem !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1 !important;
+  color: #ffffff;
+}
+
+.btlp .card__meta { font-weight: 400; font-size: var(--bt-fs-sm); color: #a1a1aa; margin-top: 4px; }
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §6 — VISUAL HIERARCHY: EDITORIAL vs DATA
+ * Two voices in one product: prose (AI insights, blog, methodology)
+ * vs data (prices, tables, dashboards).
+ * ─────────────────────────────────────────────────────────────────── */
+
+/* ── Editorial — long-form reading ── */
+.btlp .editorial,
+.btlp .desk-brief__body,
+.btlp .ai-insight__body,
+.btlp .blog-post__content,
+.btlp .bt-page-content,
+.btlp .entry-content {
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 400 !important;
+  font-size: var(--bt-fs-body-lg) !important;
+  line-height: var(--bt-lh-editorial) !important;
+  letter-spacing: 0 !important;
+  /* Proportional figures for prose — different from data tables */
+  font-variant-numeric: proportional-nums !important;
+  font-feature-settings: 'cv11' 1, 'ss01' 1 !important;
+}
+.btlp .editorial p,
+.btlp .bt-page-content p,
+.btlp .entry-content p {
+  margin-bottom: 1.25em;
+  max-width: 68ch; /* optimal reading measure */
+}
+.btlp .editorial strong,
+.btlp .bt-page-content strong { font-weight: 600 !important; }
+
+/* ── Data — dense scanning ── */
+.btlp .data,
+.btlp .ticker,
+.btlp .frame__table,
+.btlp .dashboard-cell,
+.btlp [class*="data-grid"] {
+  font-family: var(--bt-font-ui) !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1 !important;
+  letter-spacing: var(--bt-tracking-data) !important;
+  line-height: var(--bt-lh-data) !important;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §7 — METRIC OVERRIDES (prevent CLS on font swap)
+ * Inter fallback adjusted to match Inter's metrics so the page
+ * doesn't shift when the web font loads.
+ * ─────────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 107%;
+}
+@font-face {
+  font-family: 'Space Grotesk Fallback';
+  src: local('Arial');
+  ascent-override: 95%;
+  descent-override: 23%;
+  size-adjust: 102%;
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §8 — UPPERCASE LABELS (uniform letter-spacing across the system)
+ * ─────────────────────────────────────────────────────────────────── */
+.btlp [class*="__eyebrow"],
+.btlp [class$="-label"],
+.btlp .frame__tab,
+.btlp .foot__col h4,
+.btlp .src-card__live,
+.btlp .stack__corner-tag {
+  letter-spacing: var(--bt-tracking-label) !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--bt-fs-xs);
+}
+
+
+/* ───────────────────────────────────────────────────────────────────
+ * §9 — PRICE CARDS (v119.28.26)
+ * /crypto-markets/ "01 Crypto Markets" tiles. Fix overlap + improve
+ * hierarchy per user feedback (screenshot 4).
+ * ─────────────────────────────────────────────────────────────────── */
+.fxlm-price-cards {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 14px !important;
+  margin: 22px 0 !important;
+}
+@media (max-width: 1100px) { .fxlm-price-cards { grid-template-columns: repeat(3, 1fr) !important; } }
+@media (max-width: 640px)  { .fxlm-price-cards { grid-template-columns: repeat(2, 1fr) !important; } }
+
+.fxlm-price-card,
+a.fxlm-price-card {
+  background: #121316 !important;
+  border: 1px solid rgba(255,255,255,.06) !important;
+  border-radius: 0 !important;
+  padding: 18px 16px !important;
+  transition: border-color .2s, transform .15s;
+  display: block !important;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none !important;
+  min-height: 168px;
+}
+.fxlm-price-card:hover { border-color: #00FF66 !important; transform: translateY(-2px); }
+
+.fxlm-price-card-top {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 16px !important;
+}
+.fxlm-price-card-top img {
+  width: 28px !important; height: 28px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0;
+}
+.fxlm-price-card-top > div {
+  display: flex; flex-direction: column;
+  min-width: 0; flex: 1;
+}
+.fxlm-price-card-top strong {
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.fxlm-price-card-top small {
+  color: #71717a !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  margin-top: 2px !important;
+  display: block !important;
+}
+
+.fxlm-price-card-price {
+  font-family: 'Inter', 'SF Mono', monospace !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1 !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.1 !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}
+
+.fxlm-price-card-change {
+  font-family: 'Inter', sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-bottom: 8px !important;
+}
+.fxlm-price-card-change.up   { color: #00C853 !important; }
+.fxlm-price-card-change.down { color: #FF453A !important; }
+
+.fxlm-price-card-mcap {
+  font-family: 'Inter', sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+  font-size: 11px !important;
+  color: #71717a !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(255,255,255,.04) !important;
+  display: block !important;
+  font-weight: 500 !important;
+}
+
+.fxlm-price-card-cta {
+  display: none !important;  /* CTA was overlapping. The whole card is already a link. */
+}
+
+/* "01 CRYPTO MARKETS" panel header — fix tight spacing */
+.bt-panel-head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin: 28px 0 16px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+}
+.bt-panel-num {
+  background: #00FF66 !important;
+  color: #0A0B0D !important;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  letter-spacing: 0.08em !important;
+  flex-shrink: 0;
+}
+.bt-panel-title {
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #ffffff !important;
+  letter-spacing: -0.005em !important;
+  flex: 1;
+}
+.bt-panel-live {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #00FF66 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §10 — DASHBOARD LAYOUT (v119.28.27)
+ *
+ * Fixes width inconsistency between .bt-dash-wrap (1440px) and
+ * .fxlm-page-header (1280px) on interior pages — both unified to
+ * 1440px max with 32px side padding, so tables breathe properly.
+ *
+ * Also fixes the H1 cascade collision that made every widget-internal
+ * H1 render at 56px on dashboard pages.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/* Unify dashboard container widths */
+body.bt-site-takeover .bt-site-content-wrap,
+body.bt-site-takeover .container.bt-site-content-wrap {
+  max-width: 1440px !important;
+  padding-left: 32px !important;
+  padding-right: 32px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box;
+}
+
+body.bt-site-takeover .bt-dash-wrap {
+  max-width: 100% !important;          /* lives inside content-wrap which already caps */
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.bt-site-takeover .fxlm-page-header {
+  max-width: 100% !important;
+  padding: 32px 0 28px !important;
+  margin: 0 0 32px !important;
+}
+body.bt-site-takeover .fxlm-page-header::before {
+  left: 0 !important;
+}
+body.bt-site-takeover .fxlm-page-header h1,
+body.bt-site-takeover .fxlm-page-header p {
+  padding-left: 16px !important;
+}
+
+/* Page-header sizing — enforce sane caps regardless of theme overrides */
+body.bt-site-takeover .fxlm-page-header h1 {
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem) !important;   /* 28-40px */
+  font-weight: 600 !important;
+  letter-spacing: -0.018em !important;
+  line-height: 1.15 !important;
+  margin: 0 0 10px !important;
+  color: #f1f5f9 !important;
+}
+body.bt-site-takeover .fxlm-page-header p {
+  font-size: 0.9375rem !important;     /* 15px */
+  font-weight: 400 !important;
+  color: #94a3b8 !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+  max-width: 720px !important;
+}
+
+/* Tablet: pull container side padding in slightly */
+@media (max-width: 1100px) {
+  body.bt-site-takeover .bt-site-content-wrap {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* Mobile: tighter still */
+@media (max-width: 720px) {
+  body.bt-site-takeover .bt-site-content-wrap {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  body.bt-site-takeover .fxlm-page-header {
+    padding: 24px 0 20px !important;
+    margin-bottom: 24px !important;
+  }
+  body.bt-site-takeover .fxlm-page-header h1,
+  body.bt-site-takeover .fxlm-page-header p {
+    padding-left: 12px !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §11 — WIDGET TITLE SIZING
+ * Override the over-eager clamp() in revamp-v44.css and unify so every
+ * widget on every dashboard page uses one consistent title size.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-gl-title,
+body.bt-site-takeover .fxlm-exc-title,
+body.bt-site-takeover .fxlm-wl-title,
+body.bt-site-takeover .fxlm-fng-title {
+  font-size: 1.25rem !important;       /* 20px — clean widget title */
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  margin: 0 0 6px !important;
+  color: #f1f5f9 !important;
+}
+
+body.bt-site-takeover .fxlm-gl-sub,
+body.bt-site-takeover .fxlm-exc-sub,
+body.bt-site-takeover .fxlm-wl-hint {
+  font-size: 0.8125rem !important;     /* 13px */
+  color: #94a3b8 !important;           /* readable secondary text */
+  margin: 0 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §12 — TABLE WIDTH & DENSITY
+ * Tables should fill their parent panel; columns should be sized by
+ * content not by guess.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-gl-grid {
+  gap: 16px !important;
+  width: 100% !important;
+}
+body.bt-site-takeover .fxlm-gl-col {
+  min-width: 0 !important;             /* prevent grid-blowout from long names */
+}
+body.bt-site-takeover .fxlm-gl-row,
+body.bt-site-takeover .fxlm-gl-col-head-row {
+  grid-template-columns: minmax(0, 1fr) auto auto !important;
+  gap: 12px !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+body.bt-site-takeover .fxlm-gl-name {
+  min-width: 0 !important;
+}
+body.bt-site-takeover .fxlm-gl-name strong {
+  font-size: 0.875rem !important;
+  color: #e2e8f0 !important;
+}
+body.bt-site-takeover .fxlm-gl-price,
+body.bt-site-takeover .fxlm-gl-chg {
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1 !important;
+  font-size: 0.875rem !important;
+}
+
+body.bt-site-takeover .fxlm-exc-table-wrap,
+body.bt-site-takeover .bt-table-wrap {
+  width: 100% !important;
+  overflow-x: auto;
+}
+body.bt-site-takeover .fxlm-exc-table,
+body.bt-site-takeover .bt-data-table {
+  width: 100% !important;
+  table-layout: auto;
+}
+body.bt-site-takeover .fxlm-exc-table td,
+body.bt-site-takeover .bt-data-table td {
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §13 — TRADINGVIEW CHART RESPONSIVE GRID
+ *
+ * Three TradingView charts squeezed into a 1fr 1fr 1fr row at 1280px is
+ * unreadable — TradingView's UI chrome alone takes ~280px. Stack to 1
+ * column on small screens, 2 on medium, 3 only on very wide screens.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-panel-3col {
+  display: grid !important;
+  gap: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Default: charts stack — readable */
+body.bt-site-takeover .bt-panel-3col {
+  grid-template-columns: 1fr !important;
+}
+
+/* ≥ 1100px: 2 columns */
+@media (min-width: 1100px) {
+  body.bt-site-takeover .bt-panel-3col {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ≥ 1600px: 3 columns (only on very wide screens — each chart gets ~480px) */
+@media (min-width: 1600px) {
+  body.bt-site-takeover .bt-panel-3col {
+    grid-template-columns: 1fr 1fr 1fr !important;
+  }
+}
+
+/* TradingView chart wrapper: fill full width, mind aspect on narrow viewports */
+body.bt-site-takeover .fxlm-chart-wrap,
+body.bt-site-takeover .fxlm-chart-wrap iframe {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+@media (max-width: 720px) {
+  body.bt-site-takeover .fxlm-chart-wrap[data-height] {
+    min-height: 360px !important;
+  }
+  body.bt-site-takeover .fxlm-chart-wrap[data-height] [data-tv-host] {
+    height: 360px !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §14 — PANEL/WIDGET TYPOGRAPHY
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  margin: 24px 0 16px;
+}
+body.bt-site-takeover .bt-panel-num {
+  background: rgba(0,255,102,.12);
+  color: #00FF66;
+  font-family: var(--bt-font-ui);
+  font-weight: 700;
+  font-size: 0.6875rem;          /* 11px */
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+body.bt-site-takeover .bt-panel-title {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1rem !important;     /* 16px — section panel title */
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  letter-spacing: -0.005em !important;
+}
+body.bt-site-takeover .bt-panel-live {
+  margin-left: auto;
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.6875rem !important; /* 11px */
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+body.bt-site-takeover .bt-panel-live::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00FF66;
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: bt-pulse-dot 1.6s ease-in-out infinite;
+}
+@keyframes bt-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+body.bt-site-takeover .bt-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+body.bt-site-takeover .bt-widget-title {
+  font-family: var(--bt-font-display) !important;
+  font-size: 0.9375rem !important; /* 15px */
+  font-weight: 600 !important;
+  color: #e2e8f0 !important;
+  letter-spacing: -0.005em !important;
+}
+body.bt-site-takeover .bt-widget {
+  background: #121316;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+body.bt-site-takeover .bt-wf-btn {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #94a3b8;
+  font-family: var(--bt-font-ui);
+  font-size: 0.75rem;              /* 12px */
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  font-variant-numeric: tabular-nums;
+}
+body.bt-site-takeover .bt-wf-btn:hover {
+  color: #e2e8f0;
+  border-color: rgba(255,255,255,.16);
+}
+body.bt-site-takeover .bt-wf-btn.active {
+  background: rgba(0,255,102,.12);
+  border-color: rgba(0,255,102,.32);
+  color: #00FF66;
+}
+body.bt-site-takeover .bt-widget-filter {
+  display: flex;
+  gap: 4px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §15 — BROKERS / AFFILIATE GRID (v119.28.27)
+ * Used by the rebuilt /brokers/ page.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-broker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+body.bt-site-takeover .bt-broker-card {
+  background: #121316;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color .2s, transform .2s;
+}
+body.bt-site-takeover .bt-broker-card:hover {
+  border-color: rgba(0,255,102,.30);
+  transform: translateY(-2px);
+}
+body.bt-site-takeover .bt-broker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+body.bt-site-takeover .bt-broker-name {
+  font-family: var(--bt-font-display);
+  font-size: 1.0625rem;            /* 17px */
+  font-weight: 600;
+  color: #f1f5f9;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+body.bt-site-takeover .bt-broker-rating {
+  color: #FFB840;
+  font-size: 0.8125rem;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+body.bt-site-takeover .bt-broker-tagline {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
+}
+body.bt-site-takeover .bt-broker-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+body.bt-site-takeover .bt-broker-stat-label {
+  font-size: 0.6875rem;            /* 11px */
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+body.bt-site-takeover .bt-broker-stat-val {
+  font-size: 0.8125rem;
+  color: #e2e8f0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+body.bt-site-takeover .bt-broker-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+body.bt-site-takeover .bt-broker-tag {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  color: #94a3b8;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+body.bt-site-takeover .bt-broker-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #00FF66;
+  color: #0A0B0D;
+  font-family: var(--bt-font-ui);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-top: auto;
+  transition: opacity .15s;
+}
+body.bt-site-takeover .bt-broker-cta:hover {
+  opacity: 0.88;
+  color: #0A0B0D;
+}
+
+body.bt-site-takeover .bt-broker-disclosure {
+  background: rgba(59,130,246,.06);
+  border: 1px solid rgba(59,130,246,.18);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.8125rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 16px 0 24px;
+}
+body.bt-site-takeover .bt-broker-disclosure strong {
+  color: #f1f5f9;
+}
+
+/* Compact comparison table */
+body.bt-site-takeover .bt-broker-compare-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  margin: 24px 0;
+}
+body.bt-site-takeover .bt-broker-compare {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+body.bt-site-takeover .bt-broker-compare th {
+  background: #0d0e10;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  white-space: nowrap;
+}
+body.bt-site-takeover .bt-broker-compare td {
+  padding: 12px 14px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  vertical-align: middle;
+}
+body.bt-site-takeover .bt-broker-compare tr:last-child td {
+  border-bottom: none;
+}
+body.bt-site-takeover .bt-broker-compare tr:hover td {
+  background: rgba(255,255,255,.02);
+}
+body.bt-site-takeover .bt-broker-compare-name {
+  font-family: var(--bt-font-display);
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 0.9375rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §16 — SOURCE / EDITORIAL PROSE
+ * Editorial copy in dashboard pages (intro paragraphs, FAQ, etc.).
+ * Comfortable line-height, capped measure, neutral.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-dash-wrap p:not(.fxlm-gl-sub):not(.fxlm-exc-sub):not(.fxlm-wl-hint),
+body.bt-site-takeover .bt-prose p {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.9375rem !important;     /* 15px */
+  line-height: 1.65 !important;
+  color: #cbd5e1 !important;
+  max-width: 72ch !important;
+  margin: 0 0 14px !important;
+}
+body.bt-site-takeover .bt-prose strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+/* Source disclaimer banner styling */
+body.bt-site-takeover .bt-sig-source-banner {
+  background: rgba(59,130,246,.06);
+  border: 1px solid rgba(59,130,246,.18);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.8125rem !important;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin: 0 0 24px;
+}
+body.bt-site-takeover .bt-sig-source-banner strong {
+  color: #f1f5f9;
+}
+body.bt-site-takeover .bt-sig-source-banner a {
+  color: #00FF66;
+  font-weight: 600;
+  text-decoration: none;
+}
+body.bt-site-takeover .bt-sig-source-banner a:hover {
+  text-decoration: underline;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §17 — SIGNAL FILTER PILLS
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-sig-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 20px;
+}
+body.bt-site-takeover .bt-sig-filter-btn {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  color: #94a3b8;
+  font-family: var(--bt-font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all .15s;
+}
+body.bt-site-takeover .bt-sig-filter-btn:hover {
+  color: #e2e8f0;
+  border-color: rgba(255,255,255,.20);
+  background: rgba(255,255,255,.06);
+}
+body.bt-site-takeover .bt-sig-filter-btn.active {
+  background: rgba(0,255,102,.12);
+  border-color: rgba(0,255,102,.40);
+  color: #00FF66;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §18 — AUTH CARD (v119.28.28)
+ * Used by /register/ and /login/ pages. Centered, narrow, button stack.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-auth-card {
+  max-width: 420px;
+  margin: 32px auto 0;
+  padding: 32px 28px;
+  background: #121316;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+}
+
+body.bt-site-takeover .bt-auth-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #00FF66;
+  color: #0A0B0D !important;
+  border: none;
+  font-family: var(--bt-font-ui);
+  font-weight: 600;
+  font-size: 0.9375rem;            /* 15px */
+  padding: 14px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity .15s, transform .1s;
+  width: 100%;
+  letter-spacing: -0.005em;
+}
+body.bt-site-takeover .bt-auth-cta-btn:hover { opacity: 0.9; }
+body.bt-site-takeover .bt-auth-cta-btn:active { transform: translateY(1px); }
+
+body.bt-site-takeover .bt-auth-cta-btn--social {
+  background: rgba(255,255,255,.06);
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255,255,255,.12);
+  font-weight: 500;
+}
+body.bt-site-takeover .bt-auth-cta-btn--social:hover {
+  background: rgba(255,255,255,.10);
+  border-color: rgba(255,255,255,.20);
+  opacity: 1;
+}
+
+body.bt-site-takeover .bt-auth-or {
+  text-align: center;
+  font-size: 0.75rem !important;
+  color: #64748b !important;
+  margin: 4px 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  position: relative;
+}
+body.bt-site-takeover .bt-auth-or::before,
+body.bt-site-takeover .bt-auth-or::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1px;
+  background: rgba(255,255,255,.08);
+}
+body.bt-site-takeover .bt-auth-or::before { left: 0; }
+body.bt-site-takeover .bt-auth-or::after  { right: 0; }
+
+body.bt-site-takeover .bt-auth-foot {
+  text-align: center;
+  font-size: 0.8125rem !important;
+  color: #94a3b8 !important;
+  margin: 16px 0 0 !important;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+body.bt-site-takeover .bt-auth-foot a {
+  color: #00FF66;
+  font-weight: 600;
+  text-decoration: none;
+}
+body.bt-site-takeover .bt-auth-foot a:hover { text-decoration: underline; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §19 — LANDING EDITORIAL: GREEN-BAR / TEXT MARGIN (v119.28.28)
+ * The .outcome::before accent bar overlaps the title/text.
+ * Push content right so the bar has visual breathing room.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-landing-page .outcome {
+  position: relative;
+}
+body.bt-landing-page .outcome::before {
+  left: 0 !important;
+  width: 3px !important;
+}
+body.bt-landing-page .outcome--reverse::before {
+  right: 0 !important;
+  left: auto !important;
+}
+body.bt-landing-page .outcome__copy {
+  padding-left: 28px !important;
+}
+body.bt-landing-page .outcome--reverse .outcome__copy {
+  padding-left: 0 !important;
+  padding-right: 28px !important;
+}
+@media (max-width: 880px) {
+  body.bt-landing-page .outcome__copy {
+    padding-left: 22px !important;
+    padding-right: 0 !important;
+  }
+  body.bt-landing-page .outcome--reverse .outcome__copy {
+    padding-left: 22px !important;
+    padding-right: 0 !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §20 — TABLE CELL DENSITY (v119.28.28)
+ * The user reported "all tables display still not well, big cell in
+ * every line". Reduce row height across all dashboard tables.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-gl-row,
+body.bt-site-takeover .fxlm-gl-col-head-row {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+body.bt-site-takeover .fxlm-exc-table td,
+body.bt-site-takeover .fxlm-exc-table th {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+body.bt-site-takeover .bt-broker-compare td,
+body.bt-site-takeover .bt-broker-compare th {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+
+/* Generic data tables on dashboard pages */
+body.bt-site-takeover .bt-dash-wrap table tr td,
+body.bt-site-takeover .bt-dash-wrap table tr th {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  vertical-align: middle;
+}
+
+/* Crypto table specifically — used on /top-lists/, /crypto-markets/ */
+body.bt-site-takeover .fxlm-crypto-table td,
+body.bt-site-takeover .fxlm-crypto-table th {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+body.bt-site-takeover .fxlm-crypto-table {
+  width: 100% !important;
+  table-layout: auto;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §21 — MOBILE / NARROW VIEWPORT NAV (v119.28.28)
+ * Issue: on iPhone-width viewports the .nav__signup green button
+ * showed only a green block with no visible text. The text was being
+ * stripped by Inter not loading or font-feature-settings overflow.
+ * Lock the button text down explicitly.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-landing-page .nav__signup,
+body.bt-landing-page a.nav__signup,
+body.bt-site-takeover .nav__signup,
+body.bt-site-takeover a.nav__signup {
+  background: #00FF66 !important;
+  color: #0A0B0D !important;
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 9px 16px !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+  letter-spacing: -0.005em !important;
+  line-height: 1 !important;
+}
+@media (max-width: 480px) {
+  body.bt-landing-page .nav__signup,
+  body.bt-site-takeover .nav__signup {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Brand wordmark — keep white on green-tile pattern intact at every breakpoint */
+body.bt-landing-page .nav__name,
+body.bt-site-takeover .nav__name {
+  color: #ffffff !important;
+  font-family: var(--bt-font-display) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+body.bt-landing-page .nav__name span,
+body.bt-site-takeover .nav__name span {
+  color: #00FF66 !important;
+}
+body.bt-landing-page .nav__logo,
+body.bt-site-takeover .nav__logo {
+  background: #00FF66 !important;
+  color: #0A0B0D !important;
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 900 !important;
+  width: 26px !important;
+  height: 26px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  border-radius: 4px !important;
+}
+@media (max-width: 480px) {
+  body.bt-landing-page .nav__name,
+  body.bt-site-takeover .nav__name {
+    font-size: 12px !important;
+    letter-spacing: 0.04em !important;
+  }
+  body.bt-landing-page .nav__logo,
+  body.bt-site-takeover .nav__logo {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 13px !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §22 — DEFENSIVE: prevent table cells from breaking out of the table
+ * (mitigates the ",288.99" text leak observed on landing markets section)
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-landing-page .frame__table {
+  position: relative;
+  overflow: hidden;
+}
+body.bt-landing-page .frame__table td,
+body.bt-landing-page .frame__table th {
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.bt-landing-page .frame__price,
+body.bt-landing-page .frame__chg {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Suppress any positioned children that might escape */
+body.bt-landing-page .frame__tabs + table td,
+body.bt-landing-page .frame__tabs + table tr {
+  position: relative;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §23 — FULLSCREEN CHART OVERLAY VISIBILITY
+ * Make sure the .bt-chart-expand-overlay is always visible above the
+ * TradingView iframe, even when the chart toolbars are hidden.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-chart-expand-overlay,
+body.bt-landing-page .bt-chart-expand-overlay {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 50 !important;
+  background: rgba(0,255,102,.18) !important;
+  border: 1px solid rgba(0,255,102,.40) !important;
+  color: #00FF66 !important;
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  padding: 5px 10px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  transition: background .15s !important;
+}
+body.bt-site-takeover .bt-chart-expand-overlay:hover,
+body.bt-landing-page .bt-chart-expand-overlay:hover {
+  background: rgba(0,255,102,.32) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §24 — ASSET DETAIL PAGE (v119.28.28)
+ * /analysis/bitcoin/ etc. Widen, polish hero, fix grid sizing.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+#fxlm-asset-wrap {
+  max-width: 1440px !important;
+  padding: 0 32px 60px !important;
+}
+
+@media (max-width: 1100px) {
+  #fxlm-asset-wrap {
+    padding: 0 24px 60px !important;
+  }
+}
+@media (max-width: 720px) {
+  #fxlm-asset-wrap {
+    padding: 0 16px 40px !important;
+  }
+}
+
+/* Asset hero grid — make it more responsive */
+body.bt-site-takeover .fxlm-asset-page h1,
+.fxlm-asset-page h1 {
+  font-family: var(--bt-font-display) !important;
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem) !important;  /* 28-40px */
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 0 8px !important;
+  color: #f1f5f9 !important;
+}
+
+.fxlm-asset-price,
+body.bt-site-takeover .fxlm-asset-price {
+  font-family: var(--bt-font-ui) !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1 !important;
+  font-size: clamp(2rem, 4.4vw, 3rem) !important;  /* 32-48px */
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1 !important;
+  color: #ffffff !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §25 — DASHBOARD H2 SIZE LOCK
+ * Aggressively cap H2 sizes inside dashboard pages — the typography
+ * cascade was making "Top crypto lists", "Top by 24h volume" etc.
+ * render as if they were hero headlines.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-dash-wrap h2,
+body.bt-site-takeover .bt-dash-wrap > h2,
+body.bt-site-takeover .bt-page-content > h2,
+body.bt-site-takeover .entry-content > h2 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.5rem !important;        /* 24px - section heading */
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.012em !important;
+  margin: 28px 0 14px !important;
+  color: #f1f5f9 !important;
+}
+
+body.bt-site-takeover .bt-dash-wrap h3,
+body.bt-site-takeover .bt-page-content > h3,
+body.bt-site-takeover .entry-content > h3 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.125rem !important;      /* 18px */
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.005em !important;
+  margin: 20px 0 10px !important;
+  color: #e2e8f0 !important;
+}
+
+/* Lists inside dashboard prose — readable spacing */
+body.bt-site-takeover .bt-dash-wrap ul,
+body.bt-site-takeover .bt-dash-wrap ol,
+body.bt-site-takeover .bt-page-content > ul,
+body.bt-site-takeover .bt-page-content > ol {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.65 !important;
+  color: #cbd5e1 !important;
+  padding-left: 22px !important;
+  margin: 12px 0 !important;
+  max-width: 72ch !important;
+}
+body.bt-site-takeover .bt-dash-wrap li {
+  margin-bottom: 6px !important;
+}
+body.bt-site-takeover .bt-dash-wrap li strong,
+body.bt-site-takeover .bt-page-content li strong {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §26 — BREADCRUMBS POLISH
+ * fxlm_breadcrumbs renders a small nav. Make it consistent on every
+ * dashboard page.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-breadcrumbs,
+body.bt-site-takeover .bt-breadcrumbs {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.8125rem !important;
+  color: #64748b !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  display: block;
+}
+body.bt-site-takeover .fxlm-breadcrumbs a,
+body.bt-site-takeover .bt-breadcrumbs a {
+  color: #94a3b8 !important;
+  text-decoration: none !important;
+}
+body.bt-site-takeover .fxlm-breadcrumbs a:hover,
+body.bt-site-takeover .bt-breadcrumbs a:hover {
+  color: #00FF66 !important;
+}
+body.bt-site-takeover .fxlm-breadcrumbs span,
+body.bt-site-takeover .bt-breadcrumbs span {
+  color: #475569 !important;
+  margin: 0 8px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §27 — ASSET PAGES (bt-asset-page) — v119.28.29
+ *
+ * Asset detail pages (/analysis/bitcoin/, /forex/eur-usd/, etc.) run
+ * through get_header()/get_footer() — NOT the site-takeover. So they
+ * miss most of the `body.bt-site-takeover` rules. Mirror the key ones
+ * onto `body.bt-asset-page`.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-asset-page,
+body.fxlm-asset-page {
+  background: #0A0B0D !important;
+  color: #e2e8f0 !important;
+  font-family: var(--bt-font-ui), system-ui, sans-serif !important;
+}
+
+/* Footer column links — gray default, white on hover (NOT green) */
+body.bt-asset-page .foot__col a,
+body.bt-asset-page .foot__col li a,
+body.bt-asset-page .foot__col a:link,
+body.bt-asset-page .foot__col a:visited,
+body.fxlm-asset-page .foot__col a,
+body.fxlm-asset-page .foot__col li a,
+body.fxlm-asset-page .foot__col a:link,
+body.fxlm-asset-page .foot__col a:visited {
+  color: #a1a1aa !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  font-weight: 400 !important;
+}
+body.bt-asset-page .foot__col a:hover,
+body.fxlm-asset-page .foot__col a:hover {
+  color: #ffffff !important;
+}
+
+/* Footer column headers — uppercase white */
+body.bt-asset-page .foot__col h4,
+body.fxlm-asset-page .foot__col h4 {
+  color: #ffffff !important;
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  margin: 0 0 14px !important;
+}
+
+/* Footer brand */
+body.bt-asset-page .foot__brand-name,
+body.fxlm-asset-page .foot__brand-name {
+  color: #ffffff !important;
+  font-family: var(--bt-font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+}
+body.bt-asset-page .foot__brand-name span,
+body.fxlm-asset-page .foot__brand-name span {
+  color: #00FF66 !important;
+}
+
+/* Footer socials */
+body.bt-asset-page .foot__socials a,
+body.fxlm-asset-page .foot__socials a {
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.20) !important;
+  background: transparent !important;
+}
+body.bt-asset-page .foot__socials a:hover,
+body.fxlm-asset-page .foot__socials a:hover {
+  color: #00FF66 !important;
+  border-color: rgba(0,255,102,.50) !important;
+}
+body.bt-asset-page .foot__socials a svg path,
+body.fxlm-asset-page .foot__socials a svg path {
+  fill: currentColor !important;
+}
+
+/* Asset page H1 (Bitcoin BTC) — sized down from theme defaults */
+body.bt-asset-page h1,
+body.fxlm-asset-page h1 {
+  font-family: var(--bt-font-display) !important;
+  font-size: clamp(1.875rem, 3.6vw, 2.5rem) !important;  /* 30-40px */
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.022em !important;
+  color: #f1f5f9 !important;
+  margin: 0 0 8px !important;
+}
+body.bt-asset-page h2,
+body.fxlm-asset-page h2 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.5rem !important;       /* 24px */
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.012em !important;
+  color: #f1f5f9 !important;
+  margin: 24px 0 12px !important;
+}
+body.bt-asset-page h3,
+body.fxlm-asset-page h3 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.125rem !important;     /* 18px */
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  color: #e2e8f0 !important;
+  margin: 18px 0 10px !important;
+}
+
+/* Asset page price / pct typography */
+body.bt-asset-page .fxlm-asset-price,
+body.fxlm-asset-page .fxlm-asset-price {
+  font-family: var(--bt-font-ui) !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  font-feature-settings: 'tnum' 1, 'zero' 1 !important;
+  font-size: clamp(2rem, 4.4vw, 3rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1 !important;
+  color: #ffffff !important;
+}
+
+/* Disclaimer strip on asset pages (rendered by chrome) */
+body.bt-asset-page .disclaim-strip,
+body.fxlm-asset-page .disclaim-strip {
+  background: linear-gradient(90deg,#1a1410,#241a13,#1a1410) !important;
+  border-bottom: 1px solid rgba(255,184,64,.12) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §28 — NEWS / FINANCIAL-NEWS PAGE — v119.28.29
+ *
+ * The "BREAKING" banner is overflowing horizontally beyond the page
+ * container (screenshot 1). Constrain it.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-breaking-bar,
+body.bt-site-takeover .bt-news-breaking,
+body.bt-site-takeover [class*="breaking"]:not(input):not(button),
+body.bt-asset-page .bt-breaking-bar,
+body.bt-asset-page .bt-news-breaking {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  position: relative !important;
+  border-radius: 8px !important;
+  margin: 16px 0 !important;
+  background: linear-gradient(90deg, rgba(220,38,38,.20), rgba(220,38,38,.06)) !important;
+  border: 1px solid rgba(220,38,38,.30) !important;
+}
+
+/* If the breaking bar uses a flex layout with a "BREAKING" tile,
+ * make sure the tile has fixed width and the text wraps */
+body.bt-site-takeover .bt-breaking-bar > *:first-child,
+body.bt-site-takeover .bt-news-breaking > *:first-child {
+  flex-shrink: 0 !important;
+  flex-basis: 120px !important;
+}
+body.bt-site-takeover .bt-breaking-bar > *:not(:first-child),
+body.bt-site-takeover .bt-news-breaking > *:not(:first-child) {
+  min-width: 0 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Quick filter tags on news page */
+body.bt-site-takeover .bt-quick-tags,
+body.bt-site-takeover .bt-news-quick {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin: 12px 0 !important;
+}
+body.bt-site-takeover .bt-quick-tags a,
+body.bt-site-takeover .bt-news-quick a {
+  background: rgba(0,255,102,.08) !important;
+  border: 1px solid rgba(0,255,102,.24) !important;
+  color: #00FF66 !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  text-decoration: none !important;
+  transition: all .15s !important;
+}
+body.bt-site-takeover .bt-quick-tags a:hover,
+body.bt-site-takeover .bt-news-quick a:hover {
+  background: rgba(0,255,102,.16) !important;
+  border-color: rgba(0,255,102,.40) !important;
+}
+
+/* Filter tabs (All news, Crypto, Forex, DeFi & Web3) on news page */
+body.bt-site-takeover .bt-news-tabs,
+body.bt-site-takeover [class*="news-filter"] {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  margin: 16px 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+  padding-bottom: 0 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §29 — ANCHOR COLOR LOCK
+ *
+ * Some asset pages still showed accent-green links inside paragraph
+ * text (theme cascade). Lock body text anchors to white with green
+ * underline-on-hover for editorial copy.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-asset-page .bt-prose a,
+body.bt-asset-page p a:not(.btn):not([class*="cta"]):not([class*="brand"]):not([class*="nav"]),
+body.fxlm-asset-page .bt-prose a {
+  color: #00FF66 !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s;
+}
+body.bt-asset-page .bt-prose a:hover,
+body.fxlm-asset-page .bt-prose a:hover {
+  border-bottom-color: rgba(0,255,102,.5);
+}
+
+/* Ensure asset-page footer links don't have a green underline */
+body.bt-asset-page .foot a,
+body.fxlm-asset-page .foot a {
+  border-bottom: none !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §30 — CRITICAL: STOP H1 SIZE EXPLOSION
+ * Final lock to prevent any H1 inside dashboards from rendering at hero
+ * size. Layered defense in case a CSS file we don't control loads after
+ * us with even higher specificity.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 9999px) {
+  body.bt-site-takeover .bt-dash-wrap h1:not(.bt-page-title):not(.fxlm-page-header h1),
+  body.bt-site-takeover .bt-page-content h1:not(.bt-page-title):not(.fxlm-page-header h1) {
+    font-size: 1.625rem !important;    /* 26px */
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    margin: 18px 0 12px !important;
+  }
+
+  /* Cap any H1 inside a widget/shortcode at 22px */
+  body.bt-site-takeover .fxlm-gl-title,
+  body.bt-site-takeover .fxlm-exc-title,
+  body.bt-site-takeover .fxlm-wl-title,
+  body.bt-site-takeover .fxlm-fng-title,
+  body.bt-site-takeover h1.fxlm-gl-title,
+  body.bt-site-takeover h1.fxlm-exc-title,
+  body.bt-site-takeover h1.fxlm-wl-title,
+  body.bt-site-takeover h1.fxlm-fng-title {
+    font-size: 1.25rem !important;     /* 20px */
+    font-weight: 600 !important;
+    line-height: 1.25 !important;
+    margin: 0 0 6px !important;
+    letter-spacing: -0.01em !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §31 — DOUBLE PAGINATION FIX (v119.28.30)
+ *
+ * On /crypto-markets/ and category pages, two paginations were stacking.
+ * Hide any second pagination element when more than one is present.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/* If both fxlm-cft-pagination AND bt-pager-info are on the page, hide
+ * the bt-pager copy (the secondary one). Done with a sibling-presence
+ * check using ~ selector wouldn't work cross-section, so we use the
+ * simpler approach: any time we see an .fxlm-cft-wrap container above,
+ * suppress duplicate pagers below it. */
+body.bt-site-takeover .fxlm-cft-wrap ~ .bt-pager-info,
+body.bt-site-takeover .fxlm-cft-wrap ~ .bt-pager-nav,
+body.bt-site-takeover .fxlm-cft-wrap ~ * .bt-pager-info,
+body.bt-site-takeover .fxlm-cft-wrap ~ * .bt-pager-nav {
+  display: none !important;
+}
+
+/* Pager styling — proper visual hierarchy */
+body.bt-site-takeover .fxlm-cft-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+  align-items: center;
+}
+body.bt-site-takeover .fxlm-pg-btn {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  color: #94a3b8 !important;
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: all .15s;
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+}
+body.bt-site-takeover .fxlm-pg-btn:hover {
+  color: #e2e8f0 !important;
+  border-color: rgba(255,255,255,.20) !important;
+  background: rgba(255,255,255,.06) !important;
+}
+body.bt-site-takeover .fxlm-pg-btn.active {
+  background: rgba(0,255,102,.16) !important;
+  border-color: rgba(0,255,102,.40) !important;
+  color: #00FF66 !important;
+}
+body.bt-site-takeover .fxlm-pg-info {
+  color: #64748b !important;
+  font-size: 0.8125rem !important;
+  padding: 0 4px;
+  font-family: var(--bt-font-ui);
+}
+body.bt-site-takeover .fxlm-table-count {
+  color: #64748b !important;
+  font-size: 0.8125rem !important;
+  font-family: var(--bt-font-ui);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §32 — BREAKING NEWS BAR (v119.28.30)
+ * The actual class is .fxlm-breaking-bar (not .bt-breaking-bar — that
+ * v29 rule was targeting nothing). This is what the screenshots show.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-breaking-bar,
+body.bt-asset-page .fxlm-breaking-bar {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  margin: 16px 0 !important;
+  background: linear-gradient(90deg, rgba(220,38,38,.18), rgba(220,38,38,.04)) !important;
+  border: 1px solid rgba(220,38,38,.30) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+  position: relative;
+}
+
+body.bt-site-takeover .fxlm-breaking-label,
+body.bt-asset-page .fxlm-breaking-label {
+  background: rgba(220,38,38,.20) !important;
+  color: #FF6B6B !important;
+  font-family: var(--bt-font-ui) !important;
+  font-weight: 700 !important;
+  font-size: 0.6875rem !important;
+  letter-spacing: 0.08em !important;
+  padding: 14px 14px !important;
+  border-right: 1px solid rgba(220,38,38,.30) !important;
+  border-radius: 0 !important;
+  text-transform: uppercase !important;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0 !important;
+  white-space: nowrap;
+  min-width: 100px;
+  max-width: 120px;
+}
+
+body.bt-site-takeover .fxlm-breaking-scroll,
+body.bt-asset-page .fxlm-breaking-scroll {
+  display: flex !important;
+  gap: 0 !important;
+  overflow-x: auto !important;
+  scrollbar-width: thin !important;
+  white-space: nowrap !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  align-items: center;
+}
+
+body.bt-site-takeover .fxlm-breaking-item,
+body.bt-asset-page .fxlm-breaking-item {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  color: #cbd5e1 !important;
+  text-decoration: none !important;
+  padding: 14px 16px !important;
+  border-right: 1px solid rgba(255,255,255,.06) !important;
+  flex-shrink: 0;
+  transition: color .15s, background .15s;
+}
+body.bt-site-takeover .fxlm-breaking-item:hover,
+body.bt-asset-page .fxlm-breaking-item:hover {
+  color: #ffffff !important;
+  background: rgba(255,255,255,.04) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §33 — MEGA MENU FORCE-LOCK (v119.28.30)
+ * Asset/news pages were rendering mega menu items in solid green
+ * (theme cascade winning over .mega__col a rules). Lock it down.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-asset-page .mega__col a,
+body.bt-asset-page .mega__col a:link,
+body.bt-asset-page .mega__col a:visited,
+body.fxlm-asset-page .mega__col a,
+body.fxlm-asset-page .mega__col a:link,
+body.fxlm-asset-page .mega__col a:visited {
+  color: #e4e4e7 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  font-weight: 400 !important;
+}
+body.bt-asset-page .mega__col a:hover,
+body.fxlm-asset-page .mega__col a:hover {
+  color: #ffffff !important;
+  background: rgba(0,255,102,.06) !important;
+}
+body.bt-asset-page .mega__col a strong,
+body.fxlm-asset-page .mega__col a strong {
+  color: #ffffff !important;
+}
+body.bt-asset-page .mega__col-h,
+body.bt-asset-page .mega__col-h--sub,
+body.fxlm-asset-page .mega__col-h,
+body.fxlm-asset-page .mega__col-h--sub {
+  color: #71717a !important;
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+body.bt-asset-page .mega__col a.mega__more,
+body.fxlm-asset-page .mega__col a.mega__more {
+  color: #00FF66 !important;
+  font-weight: 600 !important;
+}
+body.bt-asset-page .mega__sub,
+body.fxlm-asset-page .mega__sub {
+  color: #71717a !important;
+  font-weight: 400 !important;
+}
+body.bt-asset-page .mega__ico,
+body.fxlm-asset-page .mega__ico {
+  color: #00FF66 !important;
+}
+body.bt-asset-page .mega__ico--btc, body.fxlm-asset-page .mega__ico--btc { color: #F7931A !important; }
+body.bt-asset-page .mega__ico--eth, body.fxlm-asset-page .mega__ico--eth { color: #627EEA !important; }
+body.bt-asset-page .mega__ico--sol, body.fxlm-asset-page .mega__ico--sol { color: #9945FF !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §34 — ASSET PAGE BACKGROUND LOCK (v119.28.30)
+ * User reported "individual crypto page has dark blue background not
+ * like others pages". Force the BT canonical background.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-asset-page,
+body.fxlm-asset-page,
+body.bt-asset-page #page,
+body.bt-asset-page .site,
+body.bt-asset-page .site-content,
+body.bt-asset-page #content,
+body.bt-asset-page main:not(.bt-site-main),
+body.fxlm-asset-page #page,
+body.fxlm-asset-page .site,
+body.fxlm-asset-page .site-content,
+body.fxlm-asset-page main:not(.bt-site-main) {
+  background: #0A0B0D !important;
+  background-color: #0A0B0D !important;
+}
+
+/* Theme containers might add white bg */
+body.bt-asset-page .container,
+body.bt-asset-page .wrap,
+body.bt-asset-page .inside-article,
+body.fxlm-asset-page .container,
+body.fxlm-asset-page .wrap,
+body.fxlm-asset-page .inside-article {
+  background: transparent !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §35 — CRYPTO TABLE ROWS SLIMMER (v119.28.30)
+ * Reduces row padding on /crypto/all/, /defi/, /nfts/, etc.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-cft-row td,
+body.bt-site-takeover .fxlm-cft-table td,
+body.bt-site-takeover #fxlm-cft-table td,
+body.bt-site-takeover #fxlm-cft-table th,
+body.bt-site-takeover .bt-cat-row td,
+body.bt-site-takeover .bt-cat-table td,
+body.bt-asset-page .fxlm-cft-row td,
+body.bt-asset-page #fxlm-cft-table td {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  vertical-align: middle !important;
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.875rem !important;
+}
+
+body.bt-site-takeover .fxlm-cft-row td.up,
+body.bt-site-takeover .bt-cat-row td.up {
+  color: #00C853 !important;
+}
+body.bt-site-takeover .fxlm-cft-row td.down,
+body.bt-site-takeover .bt-cat-row td.down {
+  color: #FF453A !important;
+}
+
+/* Numeric cells — tabular */
+body.bt-site-takeover .fxlm-cft-row td:nth-child(n+3),
+body.bt-site-takeover .bt-cat-row td:nth-child(n+3) {
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+/* Coin name cells — Inter at proper weight */
+body.bt-site-takeover .fxlm-cft-row td:nth-child(2) {
+  font-weight: 500 !important;
+}
+
+/* Live prices header bar */
+body.bt-site-takeover .bt-widget-head .bt-widget-title {
+  font-family: var(--bt-font-display) !important;
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;          /* 12px */
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #94a3b8 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §36 — DASHBOARD/NEWS H2 PROSE INSIDE PAGE CONTENT
+ * News pages use raw <h2> + <p> in the content. Make them readable.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/* News page content starts with <h2>Crypto news</h2> — without the
+ * .fxlm-page-header wrapper. Tighten spacing so it doesn't double as
+ * a hero title. */
+body.bt-site-takeover article.bt-singular > .bt-page-content > h2:first-child,
+body.bt-site-takeover article.bt-page > .bt-page-content > h2:first-child {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.625rem !important;       /* 26px */
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.018em !important;
+  margin: 12px 0 8px !important;
+  color: #f1f5f9 !important;
+}
+body.bt-site-takeover article.bt-singular > .bt-page-content > p:first-of-type,
+body.bt-site-takeover article.bt-page > .bt-page-content > p:first-of-type {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.9375rem !important;
+  color: #94a3b8 !important;
+  line-height: 1.55 !important;
+  max-width: 680px !important;
+  margin: 0 0 24px !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §37 — MEGA-MENU CARD LAYOUT POLISH
+ * Better spacing/sizing for the mega menu cards (Markets, Analysis,
+ * Tools, Learn, News dropdowns).
+ * ═══════════════════════════════════════════════════════════════════ */
+
+.mega__col a,
+body.bt-site-takeover .mega__col a,
+body.bt-asset-page .mega__col a {
+  padding: 9px 10px !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 0.8125rem !important;
+}
+.mega__col a strong,
+body.bt-site-takeover .mega__col a strong,
+body.bt-asset-page .mega__col a strong {
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+  display: block !important;
+  margin-bottom: 1px !important;
+}
+.mega__sub,
+body.bt-site-takeover .mega__sub,
+body.bt-asset-page .mega__sub {
+  font-size: 0.6875rem !important;     /* 11px */
+  display: block !important;
+  margin-top: 1px !important;
+  line-height: 1.3 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §38 — CALCULATOR WIDGETS (v119.28.30)
+ * Used by /tools/pip-margin/, /tools/position-size/, /tools/profit-calculator/
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-calc-wrap,
+body.bt-asset-page .bt-calc-wrap {
+  background: #121316;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+body.bt-site-takeover .bt-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+body.bt-site-takeover .bt-calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+body.bt-site-takeover .bt-calc-field label {
+  font-family: var(--bt-font-ui);
+  font-size: 0.6875rem;            /* 11px */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+body.bt-site-takeover .bt-calc-field input,
+body.bt-site-takeover .bt-calc-field select {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--bt-font-ui);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  transition: border-color .15s, background .15s;
+}
+body.bt-site-takeover .bt-calc-field input:focus,
+body.bt-site-takeover .bt-calc-field select:focus {
+  outline: none;
+  border-color: rgba(0,255,102,.40);
+  background: rgba(255,255,255,.06);
+}
+
+body.bt-site-takeover .bt-calc-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+
+body.bt-site-takeover .bt-calc-result-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+body.bt-site-takeover .bt-calc-result-label {
+  font-family: var(--bt-font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #71717a;
+  margin-bottom: 6px;
+}
+body.bt-site-takeover .bt-calc-result-val {
+  font-family: var(--bt-font-ui);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-size: 1.5rem;               /* 24px */
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.018em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+body.bt-site-takeover .bt-calc-result-meta {
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+body.bt-site-takeover .bt-calc-tip {
+  margin-top: 16px !important;
+  padding: 12px 16px !important;
+  background: rgba(59,130,246,.06) !important;
+  border: 1px solid rgba(59,130,246,.18) !important;
+  border-radius: 8px !important;
+  font-size: 0.8125rem !important;
+  color: #cbd5e1 !important;
+  line-height: 1.5 !important;
+}
+body.bt-site-takeover .bt-calc-tip strong {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §39 — TRADING SIGNALS REDESIGN (v119.28.30)
+ * Inspiration: Trade Ideas signal cards, eToro feed, TradingView ideas.
+ * Card-based layout with clear sentiment color, source attribution,
+ * and prominent CTA.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-signals-v2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;                           /* hairline separators between cards */
+  background: rgba(255,255,255,.04);
+  border-radius: 0;
+}
+
+body.bt-site-takeover .fxlm-signal-v2 {
+  background: #0e1014 !important;
+  display: grid !important;
+  grid-template-columns: 4px 1fr auto !important;
+  gap: 16px !important;
+  padding: 18px 20px !important;
+  text-decoration: none !important;
+  transition: background .15s !important;
+  position: relative;
+  border-radius: 0 !important;
+  border: none !important;
+}
+body.bt-site-takeover .fxlm-signal-v2:hover {
+  background: #14171c !important;
+}
+body.bt-site-takeover .fxlm-signal-v2:first-child { border-top-left-radius: 12px !important; border-top-right-radius: 12px !important; }
+body.bt-site-takeover .fxlm-signal-v2:last-child  { border-bottom-left-radius: 12px !important; border-bottom-right-radius: 12px !important; }
+
+body.bt-site-takeover .fxlm-signal-v2-bar {
+  width: 4px !important;
+  border-radius: 2px;
+  align-self: stretch;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-title {
+  font-family: var(--bt-font-display) !important;
+  font-size: 0.9375rem !important;     /* 15px */
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.005em !important;
+  margin: 0 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-family: var(--bt-font-ui);
+  font-size: 0.75rem !important;
+  font-weight: 500;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-source {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px !important;
+  border-radius: 4px !important;
+  border: 1px solid !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-sent {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-time {
+  color: #64748b !important;
+  font-size: 0.6875rem !important;
+  font-weight: 500 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+body.bt-site-takeover .fxlm-signal-v2-arrow {
+  align-self: center;
+  color: #64748b !important;
+  font-size: 1.25rem !important;
+  font-weight: 300 !important;
+  transition: color .15s, transform .15s;
+}
+body.bt-site-takeover .fxlm-signal-v2:hover .fxlm-signal-v2-arrow {
+  color: #00FF66 !important;
+  transform: translateX(4px);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §40 — DESK BRIEF FALLBACK
+ * If desk brief content can't load (data not yet ingested), the page
+ * shows nothing. Add a sensible empty-state.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .bt-brief-page-empty,
+body.bt-site-takeover .bt-brief__empty {
+  background: #121316;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 48px 32px;
+  text-align: center;
+  margin: 32px 0;
+}
+body.bt-site-takeover .bt-brief__empty h2 {
+  font-family: var(--bt-font-display) !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  margin: 0 0 12px !important;
+}
+body.bt-site-takeover .bt-brief__empty p {
+  font-size: 0.9375rem !important;
+  color: #94a3b8 !important;
+  max-width: 520px;
+  margin: 0 auto 20px !important;
+  line-height: 1.55 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ * §41 — CRYPTO NEWS GREEN HEADLINES (screenshot 4, 6)
+ * News headlines were rendering in solid green (theme cascade). They
+ * should be white with green accent on hover.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+body.bt-site-takeover .fxlm-news-item h3,
+body.bt-site-takeover .fxlm-news-item h2,
+body.bt-site-takeover .fxlm-news-card-title,
+body.bt-site-takeover .fxlm-news-title,
+body.bt-site-takeover .fxlm-news-feed h3,
+body.bt-site-takeover .fxlm-news-feed h2,
+body.bt-site-takeover .fxlm-news-item a:not(.btn),
+body.bt-site-takeover .fxlm-news-card a:not(.btn),
+body.bt-asset-page .fxlm-news-item h3,
+body.bt-asset-page .fxlm-news-item a:not(.btn) {
+  color: #f1f5f9 !important;
+  font-family: var(--bt-font-display) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  letter-spacing: -0.005em !important;
+}
+body.bt-site-takeover .fxlm-news-item:hover h3,
+body.bt-site-takeover .fxlm-news-item:hover h2,
+body.bt-site-takeover .fxlm-news-item a:hover,
+body.bt-site-takeover .fxlm-news-card a:hover {
+  color: #00FF66 !important;
+}
+
+/* "Read full story →" link */
+body.bt-site-takeover .fxlm-news-read,
+body.bt-site-takeover .fxlm-read-more {
+  color: #00FF66 !important;
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+/* News source pill */
+body.bt-site-takeover .fxlm-news-source,
+body.bt-site-takeover .fxlm-news-cat {
+  font-family: var(--bt-font-ui) !important;
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: #94a3b8 !important;
+}
