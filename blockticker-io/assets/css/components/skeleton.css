@@ -1,0 +1,275 @@
+/**
+ * BlockTicker Skeleton Screen Components
+ * 
+ * Reusable skeleton loader styles for better perceived performance
+ * 
+ * @package BlockTicker
+ * @version 119.30.0
+ */
+
+/* ============================================
+   SKELETON ANIMATIONS
+   ============================================ */
+
+@keyframes bt-skeleton-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes bt-skeleton-pulse {
+    0%, 100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+
+/* ============================================
+   BASE SKELETON STYLES
+   ============================================ */
+
+.bt-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bt-gray-800, #1e293b) 0%,
+        var(--bt-gray-700, #334155) 50%,
+        var(--bt-gray-800, #1e293b) 100%
+    );
+    background-size: 200% 100%;
+    animation: bt-skeleton-shimmer 1.5s infinite;
+    border-radius: var(--bt-radius-sm, 4px);
+    position: relative;
+    overflow: hidden;
+}
+
+.bt-skeleton--pulse {
+    animation: bt-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* ============================================
+   SKELETON VARIANTS
+   ============================================ */
+
+/* Text skeletons */
+.bt-skeleton--text {
+    height: 1rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.bt-skeleton--text-sm {
+    height: 0.875rem;
+}
+
+.bt-skeleton--text-lg {
+    height: 1.25rem;
+}
+
+.bt-skeleton--text-xl {
+    height: 1.5rem;
+}
+
+/* Title skeletons */
+.bt-skeleton--title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+/* Avatar skeletons */
+.bt-skeleton--avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.bt-skeleton--avatar-lg {
+    width: 64px;
+    height: 64px;
+}
+
+/* Image skeletons */
+.bt-skeleton--image {
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.bt-skeleton--image-square {
+    padding-top: 100%;
+}
+
+.bt-skeleton--image-portrait {
+    padding-top: 133.33%; /* 3:4 aspect ratio */
+}
+
+/* Card skeletons */
+.bt-skeleton--card {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.bt-skeleton--card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Table skeletons */
+.bt-skeleton--table-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--bt-gray-700, #334155);
+}
+
+.bt-skeleton--table-cell {
+    height: 1rem;
+}
+
+/* Price-specific skeletons */
+.bt-skeleton--price {
+    height: 2rem;
+    width: 120px;
+    margin-bottom: 0.5rem;
+}
+
+.bt-skeleton--change {
+    height: 1.25rem;
+    width: 80px;
+}
+
+/* Chart skeletons */
+.bt-skeleton--chart {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 1rem;
+}
+
+/* Ticker skeletons */
+.bt-skeleton--ticker {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 0;
+    overflow: hidden;
+}
+
+.bt-skeleton--ticker-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 120px;
+}
+
+/* ============================================
+   SKELETON CONTAINERS
+   ============================================ */
+
+.bt-skeleton-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bt-skeleton-container--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.bt-skeleton-container--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+.bt-loading {
+    position: relative;
+    pointer-events: none;
+    user-select: none;
+}
+
+.bt-loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.bt-loading.is-loading::after {
+    opacity: 1;
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.bt-skeleton[aria-hidden="true"] {
+    speak: none;
+    visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bt-skeleton {
+        animation: none;
+        background: var(--bt-gray-800, #1e293b);
+    }
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+.bt-dark .bt-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bt-gray-900, #0f172a) 0%,
+        var(--bt-gray-800, #1e293b) 50%,
+        var(--bt-gray-900, #0f172a) 100%
+    );
+}
+
+/* ============================================
+   EXAMPLE USAGE
+   ============================================ */
+
+/*
+HTML Example - Price Card Skeleton:
+
+<div class="bt-card bt-skeleton--card" aria-busy="true" aria-label="Loading price data">
+    <div class="bt-skeleton--title"></div>
+    <div class="bt-skeleton--price"></div>
+    <div class="bt-skeleton--change"></div>
+</div>
+
+HTML Example - Table Skeleton:
+
+<div class="bt-skeleton-container" aria-busy="true" aria-label="Loading table data">
+    <div class="bt-skeleton--table-row">
+        <div class="bt-skeleton--table-cell"></div>
+        <div class="bt-skeleton--table-cell"></div>
+        <div class="bt-skeleton--table-cell"></div>
+    </div>
+    <div class="bt-skeleton--table-row">
+        <div class="bt-skeleton--table-cell"></div>
+        <div class="bt-skeleton--table-cell"></div>
+        <div class="bt-skeleton--table-cell"></div>
+    </div>
+</div>
+*/
