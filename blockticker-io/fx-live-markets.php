@@ -3,7 +3,7 @@
  * Plugin Name: BlockTicker — Live Crypto & Forex Intelligence
  * Plugin URI:  https://blockticker.io
  * Description: Complete automated setup for your Crypto & Forex autoblog. One-click wizard: live data, 14+ news sources, AI content, newsletter, tools, education, SEO — fully autopilot.
- * Version:      119.29.0
+ * Version:      119.30.0
  * Author:      BlockTicker
  * License:     GPL2
  * Text Domain: blockticker
@@ -129,7 +129,7 @@ if ( defined( 'BT_DEPRECATION_TRACE' ) && BT_DEPRECATION_TRACE ) {
 // ───────────────────────────────────────────────────────────────────────────── (renamed from FXLM_* which were legacy).
 // FXLM_* kept as one-release backward-compat shims — removed in v103.0.
 // When bumping version, update the plugin header above AND BT_VERSION below.
-define( 'BT_VERSION', '119.29.0' );
+define( 'BT_VERSION', '119.30.0' );
 define( 'BT_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'BT_URL',     plugin_dir_url( __FILE__ ) );
 // FXLM_VERSION / FXLM_DIR / FXLM_URL shims removed in v103.0.
@@ -668,6 +668,14 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'bt-frontend-utils', BT_URL . 'assets/js/modules/frontend-utils.js', array(), $ver, true );
         // Add nonce for AJAX requests
         wp_add_inline_script( 'bt-frontend-utils', 'window.btNonce = "' . wp_create_nonce( 'bt_ajax_nonce' ) . '";', 'before' );
+    }
+    
+    // v119.30.0: Enqueue skeleton and empty state component styles
+    if ( file_exists( BT_DIR . 'assets/css/components/skeleton.css' ) ) {
+        wp_enqueue_style( 'bt-skeleton', BT_URL . 'assets/css/components/skeleton.css', array(), $ver );
+    }
+    if ( file_exists( BT_DIR . 'assets/css/components/empty-states.css' ) ) {
+        wp_enqueue_style( 'bt-empty-states', BT_URL . 'assets/css/components/empty-states.css', array(), $ver );
     }
 }, 100 );
 
