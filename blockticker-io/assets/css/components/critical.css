@@ -1,0 +1,296 @@
+/**
+ * BlockTicker Critical CSS
+ * 
+ * Above-the-fold styles for fast initial paint.
+ * This file should be inlined in <head> for optimal Core Web Vitals.
+ * 
+ * @package BlockTicker
+ * @since 119.29.0
+ */
+
+/* ── CSS Variables (bt_ namespace) ─────────────────────────────────────────── */
+:root {
+    /* Brand colors - migrated from --fxlm-* to --bt-* */
+    --bt-green:   #00FF66;
+    --bt-green2:  #00cc52;
+    --bt-red:     #FF3B30;
+    --bt-dark:    #0A0B0D;
+    --bt-dark2:   #0d0e11;
+    --bt-card:    #121316;
+    --bt-border:  rgba(255,255,255,0.05);
+    --bt-borderG: rgba(0,255,102,0.18);
+    --bt-text:    #ffffff;
+    --bt-muted:   #a1a1aa;
+    --bt-gold:    #FFB800;
+    
+    /* Typography */
+    --bt-font-mono: 'Chivo Mono', monospace;
+    --bt-font-sans: 'IBM Plex Sans', sans-serif;
+    
+    /* Spacing */
+    --bt-spacing-xs: 4px;
+    --bt-spacing-sm: 8px;
+    --bt-spacing-md: 16px;
+    --bt-spacing-lg: 24px;
+    --bt-spacing-xl: 32px;
+    
+    /* Border radius - terminal design system (zero radius) */
+    --bt-radius: 0;
+    
+    /* Transitions */
+    --bt-transition-fast: 150ms ease;
+    --bt-transition-normal: 300ms ease;
+}
+
+/* ── Base Reset ────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bt-dark);
+    color: var(--bt-text);
+    font-family: var(--bt-font-sans);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* ── Accessibility - Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ── Typography ────────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: var(--bt-spacing-md);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+p {
+    margin-top: 0;
+    margin-bottom: var(--bt-spacing-md);
+}
+
+a {
+    color: var(--bt-green);
+    text-decoration: none;
+    transition: color var(--bt-transition-fast);
+}
+
+a:hover, a:focus {
+    color: var(--bt-green2);
+    outline: 2px solid var(--bt-green);
+    outline-offset: 2px;
+}
+
+/* ── Skip Link (Accessibility) ────────────────────────────────────────────── */
+.bt-skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--bt-green);
+    color: var(--bt-dark);
+    padding: var(--bt-spacing-sm) var(--bt-spacing-md);
+    z-index: 10000;
+    transition: top var(--bt-transition-fast);
+}
+
+.bt-skip-link:focus {
+    top: 0;
+}
+
+/* ── Container ─────────────────────────────────────────────────────────────── */
+.bt-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--bt-spacing-md);
+}
+
+/* ── Ticker Bar (Critical Above-Fold) ─────────────────────────────────────── */
+.bt-ticker-wrap {
+    background: var(--bt-dark2);
+    overflow: hidden;
+    border-bottom: 1px solid var(--bt-borderG);
+    padding: var(--bt-spacing-sm) 0;
+    width: 100%;
+}
+
+.bt-ticker {
+    display: inline-flex;
+    animation: bt-ticker-scroll 30s linear infinite;
+    will-change: transform;
+}
+
+@keyframes bt-ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.bt-tick {
+    font-size: 12px;
+    color: var(--bt-muted);
+    padding: 0 var(--bt-spacing-md);
+    border-right: 1px solid var(--bt-border);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bt-spacing-xs);
+    white-space: nowrap;
+}
+
+.bt-tick .up {
+    color: var(--bt-green);
+}
+
+.bt-tick .down {
+    color: var(--bt-red);
+}
+
+/* ── Loading Skeleton (Critical Content Areas) ────────────────────────────── */
+.bt-skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bt-card) 25%,
+        var(--bt-border) 50%,
+        var(--bt-card) 75%
+    );
+    background-size: 200% 100%;
+    animation: bt-skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: var(--bt-radius);
+}
+
+@keyframes bt-skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.bt-skeleton--text {
+    height: 1em;
+    margin-bottom: var(--bt-spacing-sm);
+}
+
+.bt-skeleton--title {
+    height: 1.5em;
+    width: 60%;
+    margin-bottom: var(--bt-spacing-md);
+}
+
+.bt-skeleton--card {
+    height: 200px;
+    margin-bottom: var(--bt-spacing-md);
+}
+
+/* ── Button (Terminal Style) ──────────────────────────────────────────────── */
+.bt-btn {
+    display: inline-block;
+    padding: var(--bt-spacing-sm) var(--bt-spacing-lg);
+    background: transparent;
+    border: 1px solid var(--bt-green);
+    color: var(--bt-green);
+    font-family: var(--bt-font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all var(--bt-transition-fast);
+    border-radius: var(--bt-radius);
+}
+
+.bt-btn:hover, .bt-btn:focus {
+    background: var(--bt-green);
+    color: var(--bt-dark);
+    outline: none;
+}
+
+.bt-btn--primary {
+    background: var(--bt-green);
+    color: var(--bt-dark);
+}
+
+.bt-btn--primary:hover, .bt-btn--primary:focus {
+    background: var(--bt-green2);
+    border-color: var(--bt-green2);
+}
+
+/* ── Card Component ───────────────────────────────────────────────────────── */
+.bt-card {
+    background: var(--bt-card);
+    border: 1px solid var(--bt-border);
+    border-radius: var(--bt-radius);
+    padding: var(--bt-spacing-lg);
+    transition: border-color var(--bt-transition-normal);
+}
+
+.bt-card:hover {
+    border-color: var(--bt-borderG);
+}
+
+/* ── Price Change Indicators ──────────────────────────────────────────────── */
+.bt-price-up {
+    color: var(--bt-green);
+}
+
+.bt-price-down {
+    color: var(--bt-red);
+}
+
+.bt-price-neutral {
+    color: var(--bt-muted);
+}
+
+/* ── Mobile Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .bt-container {
+        padding: 0 var(--bt-spacing-sm);
+    }
+    
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    
+    .bt-tick {
+        font-size: 11px;
+        padding: 0 var(--bt-spacing-sm);
+    }
+}
+
+/* ── Print Styles ─────────────────────────────────────────────────────────── */
+@media print {
+    .bt-ticker-wrap,
+    .bt-skip-link,
+    .bt-btn {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+        font-size: 12pt;
+    }
+}

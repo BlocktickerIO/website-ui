@@ -3,7 +3,7 @@
  * Plugin Name: BlockTicker — Live Crypto & Forex Intelligence
  * Plugin URI:  https://blockticker.io
  * Description: Complete automated setup for your Crypto & Forex autoblog. One-click wizard: live data, 14+ news sources, AI content, newsletter, tools, education, SEO — fully autopilot.
- * Version:      119.28.37
+ * Version:      119.29.0
  * Author:      BlockTicker
  * License:     GPL2
  * Text Domain: blockticker
@@ -100,6 +100,8 @@ add_filter( 'doing_it_wrong_trigger_error', function( $trigger, $function_name )
 // Helps locate the source of "ltrim(): Passing null" / similar deprecations
 // reported in production whose call site isn't visible from the message alone.
 // Disabled by default — set BT_DEPRECATION_TRACE=true in wp-config.php to enable.
+// NOTE: v119.29.0+ recommends using BlockTicker\Core\Security for production
+// security hardening. This tracer remains useful for debugging deprecations.
 if ( defined( 'BT_DEPRECATION_TRACE' ) && BT_DEPRECATION_TRACE ) {
     set_error_handler( function( $errno, $errstr, $errfile, $errline ) {
         static $logged = false;
@@ -127,10 +129,22 @@ if ( defined( 'BT_DEPRECATION_TRACE' ) && BT_DEPRECATION_TRACE ) {
 // ───────────────────────────────────────────────────────────────────────────── (renamed from FXLM_* which were legacy).
 // FXLM_* kept as one-release backward-compat shims — removed in v103.0.
 // When bumping version, update the plugin header above AND BT_VERSION below.
-define( 'BT_VERSION', '119.28.37' );
+define( 'BT_VERSION', '119.29.0' );
 define( 'BT_DIR',     plugin_dir_path( __FILE__ ) );
 define( 'BT_URL',     plugin_dir_url( __FILE__ ) );
 // FXLM_VERSION / FXLM_DIR / FXLM_URL shims removed in v103.0.
+
+// ── PSR-4 Autoloader Registration (v119.29.0) ────────────────────────────────
+// Load modern PSR-4 autoloader for new BlockTicker\ namespace classes.
+// This allows incremental migration from legacy class-*.php files to
+// properly namespaced src/ modules without breaking existing functionality.
+require_once BT_DIR . 'src/autoload.php';
+
+// ── Initialize Modern Security Module (v119.29.0) ───────────────────────────
+// Security headers, rate limiting, diagnostic file cleanup now handled by
+// BlockTicker\Core\Security class via autoload.php plugins_loaded:1 hook.
+// Legacy inline security code below will be removed in v120.0.0.
+// ─────────────────────────────────────────────────────────────────────────────
 
 require_once BT_DIR . 'includes/class-i18n.php';         // i18n — must load first
 require_once BT_DIR . 'includes/class-utils.php';        // v69: Shared utilities — must load before classes that use it
@@ -624,6 +638,20 @@ add_filter( 'post_class', function($classes){
 // Auto-update system
 add_action( 'init', array( 'BT_AutoUpdate', 'init' ) );
 
+// v119.29.0: Inline Critical CSS for fast initial paint (Core Web Vitals)
+// This extracts above-the-fold styles from critical.css and inlines them
+// directly in <head> to eliminate render-blocking CSS requests.
+add_action( 'wp_head', function() {
+    $critical_css_file = BT_DIR . 'assets/css/components/critical.css';
+    if ( file_exists( $critical_css_file ) && ! is_admin() ) {
+        $critical_css = file_get_contents( $critical_css_file );
+        // Minify inline CSS by removing comments and extra whitespace
+        $critical_css = preg_replace( '/\/\*.*?\*\//s', '', $critical_css );
+        $critical_css = preg_replace( '/\s+/', ' ', $critical_css );
+        echo '<style id="bt-critical-css">' . $critical_css . '</style>' . "\n";
+    }
+}, 1 );
+
 // v6.2: Enqueue animation CSS + JS + critical fixes
 add_action( 'wp_enqueue_scripts', function() {
     $ver = BT_VERSION;
@@ -632,6 +660,14 @@ add_action( 'wp_enqueue_scripts', function() {
     }
     if ( file_exists( BT_DIR . 'assets/js/patch-animations.js' ) ) {
         wp_enqueue_script( 'fxlm-animations', BT_URL . 'assets/js/patch-animations.js', array(), $ver, true );
+    }
+    
+    // v119.29.0: Enqueue modern frontend utilities module
+    // Replaces inline scripts and provides skeleton loaders, price formatting, AJAX utils
+    if ( file_exists( BT_DIR . 'assets/js/modules/frontend-utils.js' ) ) {
+        wp_enqueue_script( 'bt-frontend-utils', BT_URL . 'assets/js/modules/frontend-utils.js', array(), $ver, true );
+        // Add nonce for AJAX requests
+        wp_add_inline_script( 'bt-frontend-utils', 'window.btNonce = "' . wp_create_nonce( 'bt_ajax_nonce' ) . '";', 'before' );
     }
 }, 100 );
 
